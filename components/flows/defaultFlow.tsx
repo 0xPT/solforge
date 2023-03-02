@@ -34,30 +34,6 @@ export const DefaultFlow = () => {
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [pos, setPos] = useState({ left: 0, top: 0 });
 
-  useEffect(() => {
-    const onChange = (event: any) => {
-      setNodes((nds) =>
-        nds.map((node) => {
-          if (node.id !== "2") {
-            return node;
-          }
-
-          const color = event.target.value;
-
-          setBgColor(color);
-
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              color,
-            },
-          };
-        })
-      );
-    };
-  }, []);
-
   const onConnect = useCallback(
     (params: any) =>
       setEdges((eds) =>
@@ -67,14 +43,53 @@ export const DefaultFlow = () => {
   );
 
   const onAddNode = (type: NodeTypes) => {
-    const newNode = {
-      id: `node-${nodes.length + 1}`,
-      type,
-      data: { label: `Node ${nodes.length + 1}`, type },
-      position: { x: 0, y: 0 },
-    };
-
-    setNodes((ns) => ns.concat(newNode));
+    switch (type) {
+      case NodeTypes.FunctionNode: {
+        const newNode = {
+          id: `node-${nodes.length + 1}`,
+          type,
+          data: {
+            label: `Node ${nodes.length + 1}`,
+            type,
+            inputs: [
+              {
+                name: "bussin bussin",
+                type: "banana",
+              },
+            ],
+            outputs: [],
+          },
+          position: { x: 0, y: 0 },
+          inputs: [
+            {
+              name: "bussin bussin",
+              type: "banana",
+            },
+          ],
+          outputs: [
+            {
+              name: "bussin bussin",
+              type: "banana",
+            },
+          ],
+        };
+        setNodes((ns) => ns.concat(newNode));
+        return;
+      }
+      case NodeTypes.VariableNode: {
+        const newNode = {
+          id: `node-${nodes.length + 1}`,
+          type,
+          data: {
+            label: `Node ${nodes.length + 1}`,
+            type,
+          },
+          position: { x: 0, y: 0 },
+        };
+        setNodes((ns) => ns.concat(newNode));
+        break;
+      }
+    }
   };
 
   const handleContextMenu = (e: any) => {
@@ -86,6 +101,8 @@ export const DefaultFlow = () => {
   const handleContextMenuClose = () => {
     setContextMenuOpen(false);
   };
+
+  console.log(nodes);
 
   return (
     <Flex
@@ -109,7 +126,7 @@ export const DefaultFlow = () => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        style={{ background: bgColor }}
+        style={{ background: "rgb(39 39 42)" }}
         nodeTypes={NodeElements}
         connectionLineStyle={connectionLineStyle}
         snapToGrid={true}

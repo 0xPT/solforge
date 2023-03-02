@@ -3,6 +3,7 @@ import { HiVariable } from "react-icons/hi";
 import { GrTransaction } from "react-icons/gr";
 import { IconType } from "react-icons";
 import { NodeTypes } from "./types";
+import { FunctionNode } from "./components/nodes/Function";
 import { VariableNode } from "./components/nodes/Variable";
 
 type NodeMenuItem = {
@@ -29,7 +30,7 @@ const NodeMenuItems: NodeMenuItem = {
 
 const NodeElements = {
   [NodeTypes.VariableNode]: VariableNode,
-  [NodeTypes.FunctionNode]: VariableNode,
+  [NodeTypes.FunctionNode]: FunctionNode,
   [NodeTypes.EventNode]: VariableNode,
 };
 
