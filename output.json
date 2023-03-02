@@ -1,0 +1,241 @@
+{
+  "type": "SourceUnit",
+  "children": [
+    {
+      "type": "PragmaDirective",
+      "name": "solidity",
+      "value": "0.8.8",
+      "range": [0, 21]
+    },
+    {
+      "type": "ContractDefinition",
+      "name": "Bussin",
+      "baseContracts": [],
+      "subNodes": [
+        {
+          "type": "StateVariableDeclaration",
+          "variables": [
+            {
+              "type": "VariableDeclaration",
+              "typeName": {
+                "type": "ElementaryTypeName",
+                "name": "uint256",
+                "range": [46, 52]
+              },
+              "name": "originalNumber",
+              "expression": null,
+              "visibility": "public",
+              "isStateVar": true,
+              "isDeclaredConst": false,
+              "isIndexed": false,
+              "range": [61, 74]
+            }
+          ],
+          "initialValue": null,
+          "range": [46, 75]
+        },
+        {
+          "type": "StateVariableDeclaration",
+          "variables": [
+            {
+              "type": "VariableDeclaration",
+              "typeName": {
+                "type": "ElementaryTypeName",
+                "name": "uint256",
+                "range": [81, 87]
+              },
+              "name": "additionalMath",
+              "expression": null,
+              "visibility": "private",
+              "isStateVar": true,
+              "isDeclaredConst": false,
+              "isIndexed": false,
+              "range": [97, 110]
+            }
+          ],
+          "initialValue": null,
+          "range": [81, 111]
+        },
+        {
+          "type": "FunctionDefinition",
+          "name": null,
+          "parameters": [
+            {
+              "type": "VariableDeclaration",
+              "typeName": {
+                "type": "ElementaryTypeName",
+                "name": "uint256",
+                "range": [130, 136]
+              },
+              "name": "_originalNumber",
+              "storageLocation": null,
+              "isStateVar": false,
+              "isIndexed": false,
+              "range": [130, 152]
+            }
+          ],
+          "body": {
+            "type": "Block",
+            "statements": [
+              {
+                "type": "ExpressionStatement",
+                "expression": {
+                  "type": "BinaryOperation",
+                  "operator": "=",
+                  "left": {
+                    "type": "Identifier",
+                    "name": "originalNumber",
+                    "range": [165, 178]
+                  },
+                  "right": {
+                    "type": "Identifier",
+                    "name": "_originalNumber",
+                    "range": [182, 196]
+                  },
+                  "range": [165, 196]
+                },
+                "range": [165, 197]
+              }
+            ],
+            "range": [155, 203]
+          },
+          "visibility": "default",
+          "modifiers": [],
+          "isConstructor": true,
+          "stateMutability": null,
+          "range": [118, 203]
+        },
+        {
+          "type": "FunctionDefinition",
+          "name": "getOriginalNumber",
+          "parameters": [],
+          "returnParameters": [
+            {
+              "type": "VariableDeclaration",
+              "typeName": {
+                "type": "ElementaryTypeName",
+                "name": "uint256",
+                "range": [260, 266]
+              },
+              "name": null,
+              "storageLocation": null,
+              "isStateVar": false,
+              "isIndexed": false,
+              "range": [260, 266]
+            }
+          ],
+          "body": {
+            "type": "Block",
+            "statements": [
+              {
+                "type": "ReturnStatement",
+                "expression": {
+                  "type": "Identifier",
+                  "name": "originalNumber",
+                  "range": [286, 299]
+                },
+                "range": [279, 300]
+              }
+            ],
+            "range": [269, 306]
+          },
+          "visibility": "public",
+          "modifiers": [],
+          "isConstructor": false,
+          "stateMutability": "view",
+          "range": [210, 306]
+        },
+        {
+          "type": "FunctionDefinition",
+          "name": "getTotalNumber",
+          "parameters": [],
+          "returnParameters": [
+            {
+              "type": "VariableDeclaration",
+              "typeName": {
+                "type": "ElementaryTypeName",
+                "name": "uint256",
+                "range": [360, 366]
+              },
+              "name": null,
+              "storageLocation": null,
+              "isStateVar": false,
+              "isIndexed": false,
+              "range": [360, 366]
+            }
+          ],
+          "body": {
+            "type": "Block",
+            "statements": [
+              {
+                "type": "ReturnStatement",
+                "expression": {
+                  "type": "BinaryOperation",
+                  "operator": "+",
+                  "left": {
+                    "type": "Identifier",
+                    "name": "originalNumber",
+                    "range": [386, 399]
+                  },
+                  "right": {
+                    "type": "Identifier",
+                    "name": "additionalMath",
+                    "range": [403, 416]
+                  },
+                  "range": [386, 416]
+                },
+                "range": [379, 417]
+              }
+            ],
+            "range": [369, 423]
+          },
+          "visibility": "public",
+          "modifiers": [],
+          "isConstructor": false,
+          "stateMutability": "view",
+          "range": [313, 423]
+        },
+        {
+          "type": "FunctionDefinition",
+          "name": "addMore",
+          "parameters": [],
+          "returnParameters": null,
+          "body": {
+            "type": "Block",
+            "statements": [
+              {
+                "type": "ExpressionStatement",
+                "expression": {
+                  "type": "BinaryOperation",
+                  "operator": "+=",
+                  "left": {
+                    "type": "Identifier",
+                    "name": "additionalMath",
+                    "range": [466, 479]
+                  },
+                  "right": {
+                    "type": "NumberLiteral",
+                    "number": "1",
+                    "subdenomination": null,
+                    "range": [484, 484]
+                  },
+                  "range": [466, 484]
+                },
+                "range": [466, 485]
+              }
+            ],
+            "range": [456, 491]
+          },
+          "visibility": "public",
+          "modifiers": [],
+          "isConstructor": false,
+          "stateMutability": null,
+          "range": [430, 491]
+        }
+      ],
+      "kind": "contract",
+      "range": [24, 493]
+    }
+  ],
+  "range": [0, 493]
+}
