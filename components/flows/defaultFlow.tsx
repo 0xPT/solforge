@@ -54,24 +54,20 @@ export const DefaultFlow = () => {
             inputs: [
               {
                 name: "bussin bussin",
-                type: "banana",
+                type: "uint256",
+              },
+              {
+                name: "bussin bussin",
+                type: "address",
+              },
+              {
+                name: "bussin bussin",
+                type: "struct",
               },
             ],
             outputs: [],
           },
           position: { x: 0, y: 0 },
-          inputs: [
-            {
-              name: "bussin bussin",
-              type: "banana",
-            },
-          ],
-          outputs: [
-            {
-              name: "bussin bussin",
-              type: "banana",
-            },
-          ],
         };
         setNodes((ns) => ns.concat(newNode));
         return;

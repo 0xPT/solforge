@@ -25,3 +25,12 @@ export enum NodeTypes {
   FunctionNode = "FUNCTION_NODE",
   EventNode = "EVENT_NODE",
 }
+
+export enum ENodeInputOutputType {
+  Boolean = "boolean",
+  String = "string",
+  Address = "address",
+  Uint256 = "uint256",
+  Execute = "execute",
+  Custom = "custom",
+}
