@@ -2,7 +2,12 @@ import { useEffect, useRef } from "react";
 
 export const useClickOutside = (ref: any, closeContextMenu: Function) => {
   const handleClick = (e: any) => {
-    if (ref.current && !ref.current.contains(e.target)) {
+    console.log(e.target);
+    if (
+      ref.current &&
+      !ref.current.contains(e.target) &&
+      !e.target?.class?.includes("ignore-click-outside")
+    ) {
       closeContextMenu();
     }
   };

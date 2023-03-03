@@ -63,3 +63,26 @@ export const getHandleColor = (type: EDataType) => {
       return HandleColors.white;
   }
 };
+
+export const getColorOfType = (type: string) => {
+  switch (type) {
+    case EDataType.UINT_256:
+      return "green.500";
+    case EDataType.STRING:
+      return "pink.500";
+    case EDataType.ADDRESS:
+      return "yellow.500";
+    case EDataType.INT_256:
+      return "blue.500";
+    case EDataType.STRUCT:
+      return "purple.500";
+    case EDataType.MAPPING:
+      return "orange.500";
+    case EDataType.BOOL:
+      return "teal.500";
+    case EDataType.ARRAY:
+      return "cyan.500";
+    default:
+      return "zinc.500";
+  }
+};

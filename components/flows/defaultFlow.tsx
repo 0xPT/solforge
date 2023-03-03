@@ -1,21 +1,12 @@
 import { NodeElements } from "@/constants";
 import { EFunctionType, ENodeType, EOperationType } from "@/types";
-import { traverseAST } from "@/utils/Traverse";
-import {
-  Box,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-} from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
   addEdge,
   Controls,
-  Position,
   Background,
   BackgroundVariant,
   Connection,
@@ -26,6 +17,7 @@ import { ContextMenu } from "../common/ContextMenu";
 import CustomEdge from "./CustomEdge";
 import { exampleNodes, exampleEdges } from "./examples/AddToAmountAdded";
 import output from "@/output.json";
+import { traverseAST } from "@/utils/Traverse";
 
 const initBgColor = "#000";
 
@@ -34,16 +26,21 @@ const snapGrid: [number, number] = [20, 20];
 
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
+// Set the initial node id for dragged elements.
+let id = 0;
+const getId = () => `dndnode_${id++}`;
+
 export const DefaultFlow = () => {
   // @ts-ignore
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [bgColor, setBgColor] = useState(initBgColor);
+  const [nodes, setNodes, onNodesChange] = useNodesState(exampleNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(exampleEdges);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [pos, setPos] = useState({ left: 0, top: 0 });
   const flowRef = useRef<any>(null);
+  const [flowInstance, setFlowInstance] = useState<any>(null);
 
   useEffect(() => {
+    // @ts-ignore
     const traversedAST = traverseAST(output);
 
     setNodes(traversedAST.nodes);
@@ -174,6 +171,36 @@ export const DefaultFlow = () => {
     custom: CustomEdge,
   };
 
+  const onDragOver = (event: any) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  };
+
+  const onDrop = (event: any) => {
+    event.preventDefault();
+    const reactFlowBounds = flowRef.current.getBoundingClientRect();
+    const type: ENodeType = event.dataTransfer.getData("node-type");
+    const label: string = event.dataTransfer.getData("node-label");
+
+    // check if the dropped element is valid
+    if (typeof type === "undefined" || !type || !reactFlowBounds) {
+      return;
+    }
+
+    const position = flowInstance.project({
+      x: event.clientX - reactFlowBounds.left,
+      y: event.clientY - reactFlowBounds.top,
+    });
+
+    const newNode = {
+      id: getId(),
+      position,
+      type,
+      data: { label, type, inputs: [], outputs: [] },
+    };
+    setNodes((ns) => ns.concat(newNode as any));
+  };
+
   return (
     <Flex
       onContextMenu={handleContextMenu}
@@ -192,10 +219,14 @@ export const DefaultFlow = () => {
         handleContextMenuClose={handleContextMenuClose}
         onAddNode={onAddNode}
       />
+
       <ReactFlow
+        onInit={setFlowInstance}
         ref={flowRef}
         nodes={nodes}
         edges={edges}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
         // @ts-ignore
         edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}

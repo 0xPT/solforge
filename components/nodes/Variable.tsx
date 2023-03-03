@@ -1,13 +1,7 @@
 import { DataTypeToLetter } from "@/constants";
 import { EDataType, ENodeType, IDataHandle } from "@/types";
 import { getHandleColor } from "@/utils";
-import {
-  Editable,
-  EditableInput,
-  EditablePreview,
-  Flex,
-  Text,
-} from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import React from "react";
 import { Handle, Position } from "reactflow";
 

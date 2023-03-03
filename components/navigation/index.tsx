@@ -9,13 +9,16 @@ import {
   ListItem,
 } from "@chakra-ui/react";
 import { FiPlus } from "react-icons/fi";
+import { EDataType, ENodeType } from "@/types";
+import { getColorOfType } from "@/utils";
 
 interface IListItem {
   name: string;
   values:
     | {
         name: string;
-        type: string;
+        type: EDataType;
+        nodeType: ENodeType;
       }[]
     | string[];
 }
@@ -34,56 +37,49 @@ const ListItems = [
     values: [
       {
         name: "originalNumber",
-        type: "uint256",
+        type: EDataType.UINT_256,
+        nodeType: ENodeType.VARIABLE_NODE,
       },
       {
         name: "totalNumber",
-        type: "uint256",
+        type: EDataType.UINT_256,
+        nodeType: ENodeType.VARIABLE_NODE,
       },
       {
         name: "usersWhoAdded",
-        type: "address",
+        type: EDataType.ADDRESS,
+        nodeType: ENodeType.VARIABLE_NODE,
       },
       {
         name: "testString",
-        type: "string",
+        type: EDataType.STRING,
+        nodeType: ENodeType.VARIABLE_NODE,
       },
       {
         name: "testInt",
-        type: "int256",
+        type: EDataType.INT_256,
+        nodeType: ENodeType.VARIABLE_NODE,
       },
       {
         name: "testStruct",
-        type: "struct",
+        type: EDataType.STRUCT,
+        nodeType: ENodeType.VARIABLE_NODE,
       },
       {
         name: "testMap",
-        type: "map",
+        type: EDataType.MAPPING,
+        nodeType: ENodeType.VARIABLE_NODE,
       },
     ],
   },
 ];
 
-const getColorOfType = (type: string) => {
-  switch (type) {
-    case "uint256":
-      return "green.500";
-    case "string":
-      return "pink.500";
-    case "address":
-      return "yellow.500";
-    case "int256":
-      return "blue.500";
-    case "struct":
-      return "purple.500";
-    case "map":
-      return "orange.500";
-    default:
-      return "zinc.500";
-  }
-};
-
 const SideList = ({ name, values }: IListItem) => {
+  const onDragStart = (event: any, nodeType: string, name: string) => {
+    event.dataTransfer.setData("node-label", name);
+    event.dataTransfer.setData("node-type", nodeType);
+  };
+
   return (
     <Flex mt={8} direction="column" color="zinc.500">
       <Flex justifyContent="space-between" width="full">
@@ -114,7 +110,18 @@ const SideList = ({ name, values }: IListItem) => {
           }
 
           return (
-            <ListItem key={index}>
+            <ListItem
+              _hover={{
+                cursor: "grab",
+              }}
+              _active={{
+                cursor: "grabbing",
+              }}
+              _grabbed={{ cursor: "grabbing" }}
+              draggable
+              onDragStart={(e) => onDragStart(e, value.nodeType, value.name)}
+              key={index}
+            >
               <Flex justifyContent="space-between" width="full">
                 <Text>{value.name}</Text>
                 <Text color={getColorOfType(value.type)}>{value.type}</Text>
