@@ -16,6 +16,10 @@ import { DefaultFlow } from "@/components/flows/defaultFlow";
 const inter = Inter({ subsets: ["latin"] });
 
 export const Theme = extendTheme({
+  fonts: {
+    heading: "Inter",
+    body: "Inter",
+  },
   colors: {
     zinc: {
       50: "rgb(250 250 250)",
@@ -66,14 +70,19 @@ const Main = () => {
         <Flex
           w={{ base: "full", md: "calc(100vw - 300px)" }}
           ml="300px"
-          bg="zinc.900"
+          bg="#1c1e2a"
         >
           <Tabs variant="unstyled">
-            <TabList color="zinc.400" h="40px">
+            <TabList
+              color="zinc.400"
+              h="40px"
+              borderBottomWidth="2px"
+              borderColor="#34384e"
+            >
               <Tab
                 _selected={{
                   color: "white",
-                  bg: "zinc.800",
+                  bg: "#34384e",
                   fontWeight: "medium",
                 }}
                 fontWeight="normal"
@@ -84,7 +93,7 @@ const Main = () => {
               <Tab
                 _selected={{
                   color: "white",
-                  bg: "zinc.800",
+                  bg: "#34384e",
                   fontWeight: "medium",
                 }}
                 fontWeight="normal"

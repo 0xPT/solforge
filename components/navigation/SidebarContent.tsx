@@ -28,7 +28,7 @@ export const SidebarContent = ({
   return (
     <Box
       transition="3s ease"
-      bg={"zinc.900"}
+      bg={"#08080b"}
       borderRight="1px"
       borderRightColor={"zinc.800"}
       w={{ base: "full", md: 60 }}

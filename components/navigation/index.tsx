@@ -133,11 +133,11 @@ export default function Sidebar() {
     <Box
       pos="fixed"
       minH="100vh"
-      bg="zinc.900"
-      borderRight="1px"
-      borderColor="zinc.700"
+      bg="#1c1e2a"
+      borderRight="2px"
+      borderColor="#34384e"
       width={300}
-      zIndex={1}
+      zIndex={100}
     >
       <Flex direction="column" paddingLeft={18} paddingRight={18}>
         {ListItems.map((listItem, index) => {
