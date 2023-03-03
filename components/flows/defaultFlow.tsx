@@ -109,10 +109,12 @@ export const DefaultFlow = () => {
       onContextMenu={handleContextMenu}
       w={{
         base: "full",
-        md: "calc(100vw - 100px)",
+        md: "calc(100vw - 300px)",
       }}
-      ml={60}
-      h="full"
+      h={{
+        base: "full",
+        md: "calc(100vh - 40px)",
+      }}
     >
       <ContextMenu
         isOpen={contextMenuOpen}

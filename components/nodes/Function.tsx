@@ -1,15 +1,7 @@
 import { NodeTypes } from "@/types";
-import {
-  Divider,
-  Editable,
-  EditableInput,
-  EditablePreview,
-  Flex,
-  Text,
-} from "@chakra-ui/react";
+import { Divider, Flex, Text } from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineFunction } from "react-icons/ai";
-import { HiVariable } from "react-icons/hi";
 import { Handle, Position } from "reactflow";
 
 interface FunctionNodeTypeProps {

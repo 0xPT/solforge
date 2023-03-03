@@ -1,7 +1,15 @@
 import { Inter } from "@next/font/google";
-import styles from "@/styles/Home.module.css";
-import axios from "axios";
-import { Box, ChakraProvider, extendTheme, Flex } from "@chakra-ui/react";
+import {
+  Box,
+  ChakraProvider,
+  extendTheme,
+  Flex,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from "@chakra-ui/react";
 import Sidebar from "@/components/navigation";
 import { DefaultFlow } from "@/components/flows/defaultFlow";
 
@@ -54,7 +62,48 @@ const Main = () => {
   return (
     <Box h="100vh" w="100vw">
       <Sidebar />
-      <DefaultFlow />
+      <Box h="100vh">
+        <Flex
+          w={{ base: "full", md: "calc(100vw - 300px)" }}
+          ml="300px"
+          bg="zinc.900"
+        >
+          <Tabs variant="unstyled">
+            <TabList color="zinc.400" h="40px">
+              <Tab
+                _selected={{
+                  color: "white",
+                  bg: "zinc.800",
+                  fontWeight: "medium",
+                }}
+                fontWeight="normal"
+                fontSize="sm"
+              >
+                Bussin.sol
+              </Tab>
+              <Tab
+                _selected={{
+                  color: "white",
+                  bg: "zinc.800",
+                  fontWeight: "medium",
+                }}
+                fontWeight="normal"
+                fontSize="sm"
+              >
+                fx - addToOriginalNumber
+              </Tab>
+            </TabList>
+            <TabPanels padding={0}>
+              <TabPanel padding={0}>
+                <DefaultFlow />
+              </TabPanel>
+              <TabPanel padding={0}>
+                <DefaultFlow />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </Flex>
+      </Box>
     </Box>
   );
 };

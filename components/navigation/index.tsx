@@ -134,7 +134,9 @@ export default function Sidebar() {
       pos="fixed"
       minH="100vh"
       bg="zinc.900"
-      w={{ base: "full", md: 60 }}
+      borderRight="1px"
+      borderColor="zinc.700"
+      width={300}
       zIndex={1}
     >
       <Flex direction="column" paddingLeft={18} paddingRight={18}>
