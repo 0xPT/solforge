@@ -1,5 +1,6 @@
 import { DataTypeToLetter } from "@/constants";
 import { EDataType, ENodeType, IDataHandle } from "@/types";
+import { getHandleColor } from "@/utils";
 import {
   Editable,
   EditableInput,
@@ -103,7 +104,7 @@ export const VariableNode = ({ data, selected }: IVariableNodeProps) => {
               {DataTypeToLetter[output.type]}
             </Text>
             <Handle
-              type="target"
+              type="source"
               position={Position.Right}
               id="output"
               style={{
@@ -113,7 +114,7 @@ export const VariableNode = ({ data, selected }: IVariableNodeProps) => {
                 width: 16,
                 borderRadius: 4,
                 border: "none",
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                backgroundColor: getHandleColor(output.type),
                 top: calculateHandleTop(index) + "px",
               }}
             />

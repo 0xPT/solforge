@@ -88,7 +88,7 @@ const Main = () => {
                 fontWeight="normal"
                 fontSize="sm"
               >
-                Bussin.sol
+                Contract.sol
               </Tab>
               <Tab
                 _selected={{

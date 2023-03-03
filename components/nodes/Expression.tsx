@@ -1,99 +1,53 @@
 import { DataTypeToLetter } from "@/constants";
 import { EDataType, ENodeType, EOperationType, IDataHandle } from "@/types";
 import { getHandleColor } from "@/utils";
-import { Flex, Text } from "@chakra-ui/react";
+import {
+  Editable,
+  EditableInput,
+  EditablePreview,
+  Flex,
+  Text,
+} from "@chakra-ui/react";
 import React from "react";
-import { FiMinus, FiPlus, FiSlash, FiX } from "react-icons/fi";
 import { Handle, Position } from "reactflow";
 
-interface IOperationNodeProps {
+interface IExpressionNodeProps {
   data: {
     id: string;
     type: ENodeType;
     label: string;
-    operation: EOperationType;
   };
   selected: boolean;
 }
 
-const OperationIcon = ({ operation }: { operation: EOperationType }) => {
-  switch (operation) {
-    case EOperationType.ADDITION:
-      return (
-        <FiPlus
-          color="#7b7e8c"
-          style={{
-            marginTop: "10px",
-            marginBottom: "10px",
-            marginLeft: "1.5px",
-          }}
-          size={12}
-        />
-      );
-    case EOperationType.SUBTRACTION:
-      return (
-        <FiMinus
-          color="#7b7e8c"
-          style={{
-            marginTop: "10px",
-            marginBottom: "10px",
-            marginLeft: "1.5px",
-          }}
-          size={12}
-        />
-      );
-    case EOperationType.MULTIPLICATION:
-      return (
-        <FiX
-          color="#7b7e8c"
-          style={{
-            marginTop: "10px",
-            marginBottom: "10px",
-            marginLeft: "1.5px",
-          }}
-          size={12}
-        />
-      );
-    case EOperationType.DIVISION:
-      return (
-        <FiSlash
-          color="#7b7e8c"
-          style={{
-            marginTop: "10px",
-            marginBottom: "10px",
-            marginLeft: "1.5px",
-          }}
-          size={12}
-        />
-      );
-    default:
-      return <></>;
-  }
-};
-
 const inputs: IDataHandle[] = [
   {
-    id: "first-number",
-    type: EDataType.UINT_256,
-    label: "First Number",
+    id: "execute",
+    type: EDataType.EXECUTE,
+    label: "",
   },
   {
-    id: "second-number",
+    id: "old-plus-new",
     type: EDataType.UINT_256,
-    label: "Second Number",
+    label: "Old Plus New",
   },
 ];
 
 const outputs = [
   {
-    id: "output",
+    id: "execute",
+    type: EDataType.EXECUTE,
+    label: "",
+  },
+  {
+    id: "old-plus-new",
     type: EDataType.UINT_256,
-    label: "Output",
+    label: "",
   },
 ];
 
-export const OperationNode = ({ data, selected }: IOperationNodeProps) => {
-  const { id, type, label, operation } = data;
+export const ExpressionNode = ({ data, selected }: IExpressionNodeProps) => {
+  const { id, type, label } = data;
   return (
     <Flex
       position="relative"
@@ -119,13 +73,17 @@ export const OperationNode = ({ data, selected }: IOperationNodeProps) => {
           letterSpacing="0.1em"
           color="#7b7e8c"
         >
-          {operation}
+          {label}
         </Text>
       </Flex>
       <Flex direction="row" p="12px">
         <Flex direction="column">
           {inputs.map((input, index) => (
-            <Flex key={input.id} direction="column">
+            <Flex
+              key={input.id}
+              direction="column"
+              _notLast={{ marginBottom: "12px" }}
+            >
               <Flex>
                 <Handle
                   type="target"
@@ -174,15 +132,12 @@ export const OperationNode = ({ data, selected }: IOperationNodeProps) => {
                   {input.label}
                 </Text>
               </Flex>
-              {index !== inputs.length - 1 && (
-                <OperationIcon operation={operation} />
-              )}
             </Flex>
           ))}
         </Flex>
-        <Flex justifyContent="flex-end" flex={1}>
+        <Flex alignItems="flex-end" flex={1} direction="column">
           {outputs.map((output, index) => (
-            <Flex key={output.id}>
+            <Flex key={output.id} _notLast={{ marginBottom: "12px" }}>
               <Text
                 lineHeight="16.5px"
                 fontWeight="500"
