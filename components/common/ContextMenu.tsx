@@ -35,6 +35,10 @@ const Options: IOption[] = [
         label: "Variable",
         nodeType: ENodeType.VARIABLE_NODE,
       },
+      {
+        label: "Expression",
+        nodeType: ENodeType.EXPRESSION_NODE,
+      },
     ],
   },
   {

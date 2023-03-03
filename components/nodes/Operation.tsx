@@ -71,29 +71,8 @@ const OperationIcon = ({ operation }: { operation: EOperationType }) => {
   }
 };
 
-const inputs: IDataHandle[] = [
-  {
-    id: "first-number",
-    type: EDataType.UINT_256,
-    label: "First Number",
-  },
-  {
-    id: "second-number",
-    type: EDataType.UINT_256,
-    label: "Second Number",
-  },
-];
-
-const outputs = [
-  {
-    id: "output",
-    type: EDataType.UINT_256,
-    label: "Output",
-  },
-];
-
 export const OperationNode = ({ data, selected }: IOperationNodeProps) => {
-  const { id, type, label, operation } = data;
+  const { id, type, label, operation, inputs, outputs } = data;
   return (
     <Flex
       position="relative"

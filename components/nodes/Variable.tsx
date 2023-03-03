@@ -20,14 +20,6 @@ interface IVariableNodeProps {
   selected: boolean;
 }
 
-const outputs: IDataHandle[] = [
-  {
-    id: "output",
-    type: EDataType.UINT_256,
-    label: "Total Number",
-  },
-];
-
 const calculateHandleTop = (index: number) => {
   return 37 + 25 * index;
 };
@@ -41,7 +33,7 @@ const calculateNodeHeight = (numberOfOutputs: number) => {
 };
 
 export const VariableNode = ({ data, selected }: IVariableNodeProps) => {
-  const { id, type, label } = data;
+  const { id, type, label, outputs } = data;
   return (
     <Flex
       minW="260px"

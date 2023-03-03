@@ -27,34 +27,8 @@ interface IFunctionNodeProps {
   selected: boolean;
 }
 
-const inputs = [
-  {
-    id: "execute",
-    type: EDataType.EXECUTE,
-    label: "Execute",
-  },
-  {
-    id: "output",
-    type: EDataType.UINT_256,
-    label: "Output",
-  },
-];
-
-const outputs = [
-  {
-    id: "execute",
-    type: EDataType.EXECUTE,
-    label: "Execute",
-  },
-  {
-    id: "output",
-    type: EDataType.UINT_256,
-    label: "Output",
-  },
-];
-
 export const FunctionNode = ({ data, selected }: IFunctionNodeProps) => {
-  const { id, type, label, operation } = data;
+  const { id, type, label, operation, inputs, outputs } = data;
 
   return (
     <Flex

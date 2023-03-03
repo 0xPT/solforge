@@ -1,5 +1,6 @@
 import { NodeElements } from "@/constants";
 import { EFunctionType, ENodeType, EOperationType } from "@/types";
+import { traverseAST } from "@/utils/Traverse";
 import {
   Box,
   Flex,
@@ -17,10 +18,14 @@ import ReactFlow, {
   Position,
   Background,
   BackgroundVariant,
+  Connection,
+  Edge,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { ContextMenu } from "../common/ContextMenu";
 import CustomEdge from "./CustomEdge";
+import { exampleNodes, exampleEdges } from "./examples/AddToAmountAdded";
+import output from "@/output.json";
 
 const initBgColor = "#000";
 
@@ -30,6 +35,7 @@ const snapGrid: [number, number] = [20, 20];
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
 export const DefaultFlow = () => {
+  // @ts-ignore
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [bgColor, setBgColor] = useState(initBgColor);
@@ -37,19 +43,15 @@ export const DefaultFlow = () => {
   const [pos, setPos] = useState({ left: 0, top: 0 });
   const flowRef = useRef<any>(null);
 
+  useEffect(() => {
+    const traversedAST = traverseAST(output);
+
+    setNodes(traversedAST.nodes);
+    setEdges(traversedAST.edges);
+  }, []);
+
   const onConnect = useCallback(
-    (params: any) =>
-      setEdges((eds) =>
-        addEdge(
-          {
-            ...params,
-            animated: true,
-            style: { stroke: "#fff" },
-            type: "custom",
-          },
-          eds
-        )
-      ),
+    (params: Edge<any> | Connection) => setEdges((eds) => addEdge(params, eds)),
     []
   );
 
@@ -58,12 +60,12 @@ export const DefaultFlow = () => {
     additional?: EOperationType | EFunctionType
   ) => {
     switch (type) {
-      case ENodeType.FUNCTION_NODE:
+      case ENodeType.FUNCTION_NODE: {
         const newNode = {
           id: `node-${nodes.length + 1}`,
           type,
           data: {
-            label: `Node ${nodes.length + 1}`,
+            label: additional === EFunctionType.START ? "Start" : "End",
             type,
             operation: additional,
           },
@@ -97,8 +99,24 @@ export const DefaultFlow = () => {
         //   setNodes((ns) => ns.concat(newNode));
         //   return;
         // }
+        // @ts-ignore
         setNodes((ns) => ns.concat(newNode));
         break;
+      }
+      case ENodeType.EXPRESSION_NODE: {
+        const newNode = {
+          id: `node-${nodes.length + 1}`,
+          type,
+          data: {
+            label: "Set",
+            type,
+          },
+          position: { x: 0, y: 0 },
+        };
+        // @ts-ignore
+        setNodes((ns) => ns.concat(newNode));
+        break;
+      }
       case ENodeType.VARIABLE_NODE: {
         const newNode = {
           id: `node-${nodes.length + 1}`,
@@ -109,6 +127,7 @@ export const DefaultFlow = () => {
           },
           position: { x: 0, y: 0 },
         };
+        // @ts-ignore
         setNodes((ns) => ns.concat(newNode));
         break;
       }
@@ -123,6 +142,7 @@ export const DefaultFlow = () => {
           },
           position: { x: 0, y: 0 },
         };
+        // @ts-ignore
         setNodes((ns) => ns.concat(newNode));
         break;
       }
@@ -176,6 +196,7 @@ export const DefaultFlow = () => {
         ref={flowRef}
         nodes={nodes}
         edges={edges}
+        // @ts-ignore
         edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}

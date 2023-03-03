@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { getSmoothStepPath } from "reactflow";
 

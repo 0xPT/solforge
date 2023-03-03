@@ -20,34 +20,8 @@ interface IExpressionNodeProps {
   selected: boolean;
 }
 
-const inputs: IDataHandle[] = [
-  {
-    id: "execute",
-    type: EDataType.EXECUTE,
-    label: "",
-  },
-  {
-    id: "old-plus-new",
-    type: EDataType.UINT_256,
-    label: "Old Plus New",
-  },
-];
-
-const outputs = [
-  {
-    id: "execute",
-    type: EDataType.EXECUTE,
-    label: "",
-  },
-  {
-    id: "old-plus-new",
-    type: EDataType.UINT_256,
-    label: "",
-  },
-];
-
 export const ExpressionNode = ({ data, selected }: IExpressionNodeProps) => {
-  const { id, type, label } = data;
+  const { id, type, label, inputs, outputs } = data;
   return (
     <Flex
       position="relative"
