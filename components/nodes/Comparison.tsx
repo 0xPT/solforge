@@ -1,12 +1,18 @@
 import { DataTypeToLetter } from "@/constants";
-import { EDataType, ENodeType, EOperationType, IDataHandle } from "@/types";
+import {
+  EComparisonType,
+  EDataType,
+  ENodeType,
+  EOperationType,
+  IDataHandle,
+} from "@/types";
 import { getHandleColor } from "@/utils";
-import { Checkbox, Flex, Input, Text } from "@chakra-ui/react";
+import { Checkbox, Flex, Text } from "@chakra-ui/react";
 import React from "react";
-import { FiMinus, FiPlus, FiSlash, FiX } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { Handle, Position } from "reactflow";
 
-interface IOperationNodeProps {
+interface IComparisonNodeProps {
   data: {
     id: string;
     type: ENodeType;
@@ -16,64 +22,54 @@ interface IOperationNodeProps {
   selected: boolean;
 }
 
-const OperationIcon = ({ operation }: { operation: EOperationType }) => {
+const OperationIcon = ({ operation }: { operation: EComparisonType }) => {
   switch (operation) {
-    case EOperationType.ADDITION:
+    case EComparisonType.LESS_THAN:
       return (
-        <FiPlus
-          color="#fff"
+        <FiArrowLeft
+          color="#7b7e8c"
           style={{
             marginTop: "10px",
             marginBottom: "10px",
             marginLeft: "1.5px",
-            fontSize: "20px",
           }}
+          size={12}
         />
       );
-    case EOperationType.SUBTRACTION:
+    case EComparisonType.GREATER_THAN:
       return (
-        <FiMinus
-          color="#fff"
+        <FiArrowRight
+          color="#7b7e8c"
           style={{
             marginTop: "10px",
             marginBottom: "10px",
             marginLeft: "1.5px",
-            fontSize: "20px",
           }}
+          size={12}
         />
       );
-    case EOperationType.MULTIPLICATION:
+    case EComparisonType.DOUBLE_EQUALS:
       return (
-        <FiX
+        <Flex
           color="#fff"
           style={{
             marginTop: "10px",
             marginBottom: "10px",
             marginLeft: "1.5px",
-            fontSize: "20px",
+            fontWeight: 200,
+            fontSize: 30,
           }}
-        />
-      );
-    case EOperationType.DIVISION:
-      return (
-        <FiSlash
-          color="#fff"
-          style={{
-            marginTop: "10px",
-            marginBottom: "10px",
-            marginLeft: "1.5px",
-            fontSize: "20px",
-          }}
-        />
+        >
+          =
+        </Flex>
       );
     default:
       return <></>;
   }
 };
 
-export const OperationNode = ({ data, selected }: IOperationNodeProps) => {
+export const ComparisonNode = ({ data, selected }: IComparisonNodeProps) => {
   const { id, type, label, operation, inputs, outputs } = data;
-
   return (
     <Flex
       position="relative"
@@ -91,27 +87,8 @@ export const OperationNode = ({ data, selected }: IOperationNodeProps) => {
               direction="column"
               _notLast={{ marginBottom: "12px" }}
             >
-              {input.type === EDataType.BOOLEAN_LITERAL ||
-              input.type === EDataType.NUMBER_LITERAL ? (
-                <>
-                  {input.type === EDataType.BOOLEAN_LITERAL ? (
-                    <Checkbox value={input.value} />
-                  ) : (
-                    <Input
-                      // value={input.value}
-                      style={{
-                        display: "flex",
-                        position: "relative",
-                        height: 16,
-                        width: 24,
-                        borderRadius: 4,
-                        color: "white",
-                        border: "1px solid white",
-                        borderColor: getHandleColor(input.type),
-                      }}
-                    />
-                  )}
-                </>
+              {input.type === EDataType.BOOLEAN_LITERAL ? (
+                <Checkbox value={input.value} />
               ) : (
                 <Flex>
                   <Handle
@@ -170,7 +147,7 @@ export const OperationNode = ({ data, selected }: IOperationNodeProps) => {
           w="full"
           justifyContent="center"
           left="0px"
-          bottom="14px"
+          bottom="6px"
         >
           <OperationIcon operation={operation} />
         </Flex>

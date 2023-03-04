@@ -1,5 +1,5 @@
 import { DataTypeToLetter } from "@/constants";
-import { EDataType, ENodeType, IDataHandle } from "@/types";
+import { ENodeType, IDataHandle } from "@/types";
 import { getHandleColor } from "@/utils";
 import { Flex, Text } from "@chakra-ui/react";
 import React from "react";
@@ -28,84 +28,89 @@ const calculateNodeHeight = (numberOfOutputs: number) => {
 
 export const VariableNode = ({ data, selected }: IVariableNodeProps) => {
   const { id, type, label, outputs } = data;
+
+  const longestOutput = outputs.reduce(
+    (acc, output) => (output.label.length > acc ? output.label.length : acc),
+    ""
+  );
+
+  const outputWidth = longestOutput * 7;
+
+  console.log(outputWidth);
+
   return (
     <Flex
-      minW="260px"
+      minW={`${outputWidth + 75}px`}
+      position="relative"
       bg="#262736"
       direction="column"
       borderRadius="12"
       boxShadow={100}
-      height={calculateNodeHeight(outputs.length) + "px"}
     >
-      <Flex
-        borderBottomWidth={2}
-        borderColor="#34384e"
-        padding="14px 12px 12px"
-      >
-        <Text
-          style={{
-            fontFeatureSettings: "'ss02' on",
-          }}
-          fontSize="9.6px"
-          fontWeight="500"
-          textTransform="uppercase"
-          lineHeight={0.6}
-          letterSpacing="0.1em"
-          color="#7b7e8c"
+      <Flex direction="row" p="12px">
+        <Flex
+          justifyContent="flex-start"
+          alignItems="flex-end"
+          flex={1}
+          flexDir="column"
         >
-          Variable
-        </Text>
-      </Flex>
-      <Flex direction="row" align="center" p="12px">
-        {outputs.map((output, index) => (
-          <Flex key={output.id}>
-            <Text
-              fontWeight="500"
-              right="36px"
-              top={calculateHandleDetailsTop(index) + "px"}
-              position="absolute"
-              fontSize="9.6px"
-              textTransform="uppercase"
-              letterSpacing="0.1em"
-              color="#7b7e8c"
-              style={{
-                fontFeatureSettings: "'ss02' on",
-              }}
+          {outputs.map((output, index) => (
+            <Flex
+              key={output.id}
+              direction="column"
+              _notLast={{ marginBottom: "12px" }}
             >
-              {output.label}
-            </Text>
-            <Text
-              fontWeight="500"
-              right="13.5px"
-              top={calculateHandleDetailsTop(index) + "px"}
-              position="absolute"
-              fontSize="9.6px"
-              textTransform="uppercase"
-              letterSpacing="0.1em"
-              color="#7b7e8c"
-              style={{
-                fontFeatureSettings: "'ss02' on",
-              }}
-            >
-              {DataTypeToLetter[output.type]}
-            </Text>
-            <Handle
-              type="source"
-              position={Position.Right}
-              id="output"
-              style={{
-                marginTop: 16,
-                marginRight: 14,
-                height: 16,
-                width: 16,
-                borderRadius: 4,
-                border: "none",
-                backgroundColor: getHandleColor(output.type),
-                top: calculateHandleTop(index) + "px",
-              }}
-            />
-          </Flex>
-        ))}
+              <Flex>
+                <Text
+                  lineHeight="16.5px"
+                  fontWeight="500"
+                  fontSize="9.6px"
+                  textTransform="uppercase"
+                  letterSpacing="0.1em"
+                  color="#fff"
+                  style={{
+                    fontFeatureSettings: "'ss02' on",
+                  }}
+                  mr="5px"
+                >
+                  {output.label}
+                </Text>
+                <Handle
+                  type="source"
+                  position={Position.Right}
+                  id={output.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "relative",
+                    height: 16,
+                    width: 16,
+                    borderRadius: 4,
+                    border: "none",
+                    backgroundColor: getHandleColor(output.type),
+                  }}
+                >
+                  <Text
+                    pointerEvents="none"
+                    fontWeight="500"
+                    fontSize="9.6px"
+                    textTransform="uppercase"
+                    letterSpacing="0.1em"
+                    color="#fff"
+                    mt="1.5px"
+                    ml="0.75px"
+                    style={{
+                      fontFeatureSettings: "'ss02' on",
+                    }}
+                  >
+                    {DataTypeToLetter[output.type]}
+                  </Text>
+                </Handle>
+              </Flex>
+            </Flex>
+          ))}
+        </Flex>
       </Flex>
     </Flex>
   );
