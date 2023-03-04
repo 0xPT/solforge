@@ -64,7 +64,7 @@ export const convertNodesToAST = (
       case ENodeType.FUNCTION_NODE: {
         const functionDefinition: IASTFunctionDefinition = {
           type: "FunctionDefinition",
-          name: currentNode.data.label,
+          name: currentNode.data.label.split(" ")[0],
           parameters: [],
           returnParameters: [],
           body: {
@@ -82,11 +82,12 @@ export const convertNodesToAST = (
             (currentNode.data.operation as EFunctionType) ===
             EFunctionType.START
           ) {
+            console.log(currentNode);
             functionDefinition.returnParameters.push({
               type: "VariableDeclaration",
               typeName: {
                 type: "ElementaryTypeName",
-                name: output.type === EDataType.ADDRESS ? "address" : "uint256",
+                name: output.type,
                 range: [0, 0],
               },
               name: output.label,
@@ -121,7 +122,6 @@ export const convertNodesToAST = (
       }
       // Handle variable declarations
       case ENodeType.VARIABLE_NODE: {
-        console.log(currentNode);
         // If the variable declaration is part of a binary operation the dataSource will contain the left side of a binary operation with existing data.
         // Below will add the right side of the binary operation to the dataSource.
         if (dataSource.right) {
@@ -175,7 +175,23 @@ export const convertNodesToAST = (
             },
           },
         };
-        dataSource.push(expressionStatement);
+        dataSource.push(
+          {
+            type: "VariableDeclarationStatement",
+            variables: [
+              {
+                name: currentNode.data.label.split(" ")[1],
+                type: "VariableDeclaration",
+                typeName: {
+                  type: "ElementaryTypeName",
+                  name: currentNode.data.variableTypeName,
+                  range: [0, 0],
+                },
+              },
+            ],
+          },
+          expressionStatement
+        );
         return expressionStatement.expression;
       }
     }

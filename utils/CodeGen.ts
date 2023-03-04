@@ -39,9 +39,9 @@ export function ast_to_source(ast) {
           }
           for (let statement of sub_node.body.statements) {
             if (statement.type === "VariableDeclarationStatement") {
-              let variables = statement.variables.map(
-                (vari) => `${vari.typeName.name} ${vari.name}`
-              );
+              let variables = statement.variables.map((vari) => {
+                return `${vari.typeName.name} ${vari.name}`;
+              });
               source += `    ${variables.join(", ")};\n`;
             } else if (statement.type === "ExpressionStatement") {
               let expr = expression_to_source(statement.expression);
