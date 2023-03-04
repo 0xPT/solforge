@@ -1,30 +1,39 @@
 import { NodeElements } from "@/constants";
 import { EFunctionType, ENodeType, EOperationType } from "@/types";
-import { Flex } from "@chakra-ui/react";
+import { traverseAST } from "@/utils/Traverse";
+import {
+  Box,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
   addEdge,
   Controls,
+  Position,
   Background,
   BackgroundVariant,
   Connection,
   Edge,
+  SelectionMode,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { ContextMenu } from "../common/ContextMenu";
 import CustomEdge from "./CustomEdge";
 import { exampleNodes, exampleEdges } from "./examples/AddToAmountAdded";
 import output from "@/output.json";
-import { traverseAST } from "@/utils/Traverse";
 
 const initBgColor = "#000";
 
 const connectionLineStyle = { stroke: "#fff" };
 const snapGrid: [number, number] = [20, 20];
 
-const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
+const defaultViewport = { x: 0, y: 0, zoom: 5 };
 
 // Set the initial node id for dragged elements.
 let id = 0;
@@ -32,15 +41,14 @@ const getId = () => `dndnode_${id++}`;
 
 export const DefaultFlow = () => {
   // @ts-ignore
-  const [nodes, setNodes, onNodesChange] = useNodesState(exampleNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(exampleEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [pos, setPos] = useState({ left: 0, top: 0 });
   const flowRef = useRef<any>(null);
   const [flowInstance, setFlowInstance] = useState<any>(null);
 
   useEffect(() => {
-    // @ts-ignore
     const traversedAST = traverseAST(output);
 
     setNodes(traversedAST.nodes);
@@ -143,6 +151,21 @@ export const DefaultFlow = () => {
         setNodes((ns) => ns.concat(newNode));
         break;
       }
+      case ENodeType.COMPARISON_NODE: {
+        const newNode = {
+          id: `node-${nodes.length + 1}`,
+          type,
+          data: {
+            label: `Node ${nodes.length + 1}`,
+            type,
+            operation: additional,
+          },
+          position: { x: 0, y: 0 },
+        };
+        // @ts-ignore
+        setNodes((ns) => ns.concat(newNode));
+        break;
+      }
     }
   };
 
@@ -200,6 +223,8 @@ export const DefaultFlow = () => {
     };
     setNodes((ns) => ns.concat(newNode as any));
   };
+  // console.log(nodes);
+  // console.log(edges);
 
   return (
     <Flex
@@ -219,7 +244,6 @@ export const DefaultFlow = () => {
         handleContextMenuClose={handleContextMenuClose}
         onAddNode={onAddNode}
       />
-
       <ReactFlow
         onInit={setFlowInstance}
         ref={flowRef}
@@ -238,8 +262,11 @@ export const DefaultFlow = () => {
         snapToGrid={true}
         snapGrid={snapGrid}
         defaultViewport={defaultViewport}
-        fitView
-        attributionPosition="bottom-center"
+        panOnScroll
+        selectionOnDrag
+        panOnDrag={[1, 2]}
+        selectionMode={SelectionMode.Partial}
+        maxZoom={30}
       >
         <Controls />
         <Background variant={BackgroundVariant.Dots} />

@@ -1,20 +1,24 @@
-import { AST, StatementsEntity } from "@/AstTypes";
 import {
   EDataType,
   EFunctionType,
   ENodeType,
-  EOperationType,
-  Operators,
+  IASTSourceUnit,
+  IASTVariableDeclaration,
+  IReactFlowEdge,
+  IReactFlowNode,
 } from "@/types";
 import { getEdgeColor } from "@/utils";
 import { Node } from "reactflow";
 import {
-  createFunctionDeclarationAndReturnNodes,
+  createBooleanLiteralNode,
+  createComparisonNode,
+  createFunctionCallNode,
+  createIndexAccessNode,
+  createMemberAccessNode,
+  createNumberLiteralNode,
   createOperatorNode,
-  createVariableNode,
   createSetterNode,
-  createEdge,
-  createNodeId,
+  createStringLiteralNode,
 } from "./Creators";
 
 interface Variable {
@@ -22,9 +26,58 @@ interface Variable {
   name: string;
   parameter: boolean;
 }
+
+interface IStruct {
+  name: string;
+  variables: VariableObject;
+}
+
+interface IStructObject {
+  [key: string]: Variable;
+}
+
 interface VariableObject {
   [key: string]: Variable;
 }
+
+const createVariable = (variable: IASTVariableDeclaration) => {
+  console.log(variable);
+  if (variable.typeName.type === "ElementaryTypeName") {
+    return {
+      name: variable.name,
+      type: variable.typeName.name,
+      parameter: false,
+    };
+  } else if (variable.typeName.type === "Mapping") {
+    return {
+      name: variable.name,
+      type: "mapping",
+      parameter: false,
+      key: variable.typeName.keyType.name,
+      keyType: variable.typeName.keyType.type,
+      value:
+        variable.typeName.valueType.type === "UserDefinedTypeName"
+          ? variable.typeName.valueType.namePath
+          : variable.typeName.valueType.name,
+      valueType: variable.typeName.valueType.type,
+    };
+  } else if (variable.typeName.type === "ArrayTypeName") {
+    if (variable.typeName.baseTypeName.type === "ElementaryTypeName") {
+      return {
+        name: variable.name,
+        type: "array",
+        parameter: false,
+      };
+    } else {
+      return {
+        name: variable.name,
+        type: "array",
+        value: variable.typeName.baseTypeName.namePath,
+        valueType: variable.typeName.baseTypeName.type,
+      };
+    }
+  }
+};
 
 const variableToDataType = (variable: Variable) => {
   switch (variable.type) {
@@ -39,19 +92,11 @@ const variableToDataType = (variable: Variable) => {
   }
 };
 
-const operatorToNodeType = (operator: string) => {
-  switch (operator) {
-    case "+":
-      return EOperationType.ADDITION;
-    case "-":
-      return EOperationType.SUBTRACTION;
-  }
-};
-
-export const traverseAST = (ast: AST) => {
-  let nodes = [];
-  let edges = [];
+export const traverseAST = (ast: IASTSourceUnit) => {
+  let nodes: IReactFlowNode[] = [];
+  let edges: IReactFlowEdge[] = [];
   const variables: VariableObject = {};
+  const structs: IStructObject = {};
 
   const traverse = (
     astNode,
@@ -59,9 +104,38 @@ export const traverseAST = (ast: AST) => {
     functionInfo: { functionStartId: string; functionEndId: string }
   ) => {
     switch (astNode?.type) {
+      case "ExpressionStatement": {
+        const { nodeId } = traverse(astNode.expression, position, functionInfo);
+
+        console.log("Expression ", nodeId);
+        return {
+          nodeId,
+        };
+      }
+      case "IfStatement": {
+        const { nodeId } = traverse(astNode.condition, position, functionInfo);
+
+        console.log("If ", nodeId);
+        return {
+          nodeId,
+        };
+      }
+      case "FunctionCall": {
+        return createFunctionCallNode(
+          traverse,
+          astNode,
+          position,
+          functionInfo,
+          nodes,
+          edges
+        );
+      }
       case "Identifier":
         const variableNodeId = Math.random().toString(36).substr(2, 15);
-        const isParameter = variables[astNode.name].parameter;
+
+        const name = astNode.name === "msg" ? "msg.sender" : astNode.name;
+
+        const isParameter = variables[name]?.parameter;
 
         if (!isParameter) {
           const variableNode = {
@@ -74,8 +148,8 @@ export const traverseAST = (ast: AST) => {
               outputs: [
                 {
                   id: `output`,
-                  type: variableToDataType(variables[astNode.name]),
-                  label: astNode.name,
+                  type: variableToDataType(variables[name]),
+                  label: name,
                 },
               ],
             },
@@ -87,248 +161,96 @@ export const traverseAST = (ast: AST) => {
         return {
           nodeId: variableNodeId,
           handleId: "output",
-          type: variableToDataType(variables[astNode.name]),
-          label: astNode.name,
+          type: variableToDataType(variables[name]),
+          label: name,
           isParameter,
         };
       case "NumberLiteral":
-        const isAddress = astNode.number.startsWith("0x");
-        const numberNodeId = Math.random().toString(36).substr(2, 15);
-        const numberNode = {
-          id: numberNodeId,
-          type: ENodeType.VARIABLE_NODE,
-          data: {
-            label: astNode.number,
-            type: ENodeType.VARIABLE_NODE,
-            inputs: [],
-            outputs: [
-              {
-                id: `output`,
-                type: isAddress ? EDataType.ADDRESS : EDataType.UINT_256,
-                label: astNode.number,
-              },
-            ],
-          },
+        return createNumberLiteralNode(
+          traverse,
+          astNode,
           position,
-        };
-        nodes.push(numberNode);
-
-        return {
-          nodeId: numberNodeId,
-          handleId: "output",
-          type: isAddress ? EDataType.ADDRESS : EDataType.UINT_256,
-          label: astNode.number,
-        };
+          functionInfo,
+          nodes,
+          edges
+        );
       case "StringLiteral":
-        const stringNodeId = Math.random().toString(36).substr(2, 15);
-        const stringNode = {
-          id: stringNodeId,
-          type: ENodeType.VARIABLE_NODE,
-          data: {
-            label: astNode.value,
-            type: ENodeType.VARIABLE_NODE,
-            inputs: [],
-            outputs: [
-              {
-                id: `output`,
-                type: EDataType.STRING,
-                label: astNode.value,
-              },
-            ],
-          },
+        return createStringLiteralNode(
+          traverse,
+          astNode,
           position,
-        };
-        nodes.push(stringNode);
-
-        return {
-          nodeId: stringNodeId,
-          handleId: "output",
-          type: EDataType.STRING,
-          label: astNode.value,
-        };
+          functionInfo,
+          nodes,
+          edges
+        );
       case "BooleanLiteral":
-        const booleanNodeId = Math.random().toString(36).substr(2, 15);
-        const booleanNode = {
-          id: booleanNodeId,
-          type: ENodeType.VARIABLE_NODE,
-          data: {
-            label: astNode.value,
-            type: ENodeType.VARIABLE_NODE,
-            inputs: [],
-            outputs: [
-              {
-                id: `output`,
-                type: EDataType.BOOL,
-                label: astNode.value,
-              },
-            ],
-          },
+        return createBooleanLiteralNode(
+          traverse,
+          astNode,
           position,
-        };
-        nodes.push(booleanNode);
-
-        return {
-          nodeId: booleanNodeId,
-          handleId: "output",
-          type: EDataType.BOOL,
-          label: astNode.value,
-        };
+          functionInfo,
+          nodes,
+          edges
+        );
+      case "MemberAccess": {
+        console.log(astNode);
+        return createMemberAccessNode(
+          traverse,
+          astNode,
+          position,
+          functionInfo,
+          nodes,
+          edges
+        );
+      }
+      case "IndexAccess": {
+        return createIndexAccessNode(
+          traverse,
+          astNode,
+          position,
+          functionInfo,
+          nodes,
+          edges
+        );
+      }
       case "BinaryOperation": {
         if (astNode.operator === "=") {
-          const setterId = Math.random().toString(36).substr(2, 15);
-
-          const rightNode = traverse(
-            astNode.right,
-            {
-              x: position.x - 500,
-              y: position.y + 250,
-            },
-            functionInfo
-          );
-
-          const setterNode = {
-            id: setterId,
-            type: ENodeType.EXPRESSION_NODE,
-            data: {
-              label: `Set ${astNode.left.name}`,
-              type: ENodeType.EXPRESSION_NODE,
-              inputs: [
-                {
-                  id: "execute",
-                  type: EDataType.EXECUTE,
-                  label: "",
-                },
-                {
-                  id: "right",
-                  type: rightNode.type,
-                  label: "right",
-                },
-              ],
-              outputs: [
-                {
-                  id: "execute",
-                  type: EDataType.EXECUTE,
-                  label: "",
-                },
-                {
-                  id: `output`,
-                  type: rightNode.type,
-                  label: "",
-                },
-              ],
-            },
+          return createSetterNode(
+            traverse,
+            astNode,
             position,
-          };
-
-          nodes.push(setterNode);
-          // edges.push({
-          //   source: leftNode?.nodeId,
-          //   sourceHandle: "output",
-          //   target: setterId,
-          //   targetHandle: "left",
-          //   id: `${leftNode?.nodeId}-${setterId}-left`,
-          //   type: "smoothstep",
-          //   style: { stroke: getEdgeColor(EDataType.EXECUTE) },
-          // });
-          edges.push({
-            source: rightNode?.nodeId,
-            sourceHandle: "output",
-            target: setterId,
-            targetHandle: `right`,
-            id: `${rightNode?.nodeId}-${setterId}-right`,
-            type: "smoothstep",
-            style: { stroke: getEdgeColor(rightNode.type) },
-          });
-          return {
-            nodeId: setterId,
-            handleId: "output",
-            type: EDataType.EXECUTE,
-            label: astNode.operator,
-          };
+            functionInfo,
+            nodes,
+            edges
+          );
+        } else if (
+          astNode.operator === "<" ||
+          astNode.operator === ">" ||
+          astNode.operator === "=="
+        ) {
+          return createComparisonNode(
+            traverse,
+            astNode,
+            position,
+            functionInfo,
+            nodes,
+            edges
+          );
         } else {
-          const operatorNodeId = Math.random().toString(36).substr(2, 15);
-
-          const leftNode = traverse(
-            astNode.left,
-            {
-              x: position.x - 500,
-              y: position.y,
-            },
-            functionInfo
-          );
-
-          const rightNode = traverse(
-            astNode.right,
-            {
-              x: position.x - 500,
-              y: position.y + 250,
-            },
-            functionInfo
-          );
-
-          const operatorNode = {
-            id: operatorNodeId,
-            type: ENodeType.OPERATION_NODE,
-            data: {
-              label: astNode.operator,
-              type: ENodeType.OPERATION_NODE,
-              operation: operatorToNodeType(astNode.operator),
-              inputs: [
-                {
-                  id: "left",
-                  type: leftNode.type,
-                  label: "",
-                },
-                {
-                  id: "right",
-                  type: rightNode.type,
-                  label: "",
-                },
-              ],
-              outputs: [
-                {
-                  id: "output",
-                  type: leftNode.type,
-                  label: "",
-                },
-              ],
-            },
+          return createOperatorNode(
+            traverse,
+            astNode,
             position,
-          };
-
-          nodes.push(operatorNode);
-          edges.push({
-            source: leftNode.isParameter
-              ? functionInfo.functionStartId
-              : leftNode?.nodeId,
-            sourceHandle: leftNode.isParameter ? leftNode.label : "output",
-            target: operatorNodeId,
-            targetHandle: "left",
-            id: `${leftNode?.nodeId}-${operatorNodeId}-left`,
-            type: "smoothstep",
-            style: { stroke: getEdgeColor(leftNode.type) },
-          });
-          edges.push({
-            source: rightNode.isParameter
-              ? functionInfo.functionStartId
-              : rightNode?.nodeId,
-            sourceHandle: rightNode.isParameter ? rightNode.label : "output",
-            target: operatorNodeId,
-            targetHandle: `right`,
-            id: `${rightNode?.nodeId}-${operatorNodeId}-right`,
-            type: "smoothstep",
-            style: { stroke: getEdgeColor(rightNode.type) },
-          });
-          return {
-            nodeId: operatorNodeId,
-            handleId: "output",
-            type: leftNode.type,
-            label: astNode.operator,
-          };
+            functionInfo,
+            nodes,
+            edges
+          );
         }
       }
       default:
-        break;
+        return {
+          nodeId: "wut",
+        };
     }
   };
 
@@ -337,23 +259,35 @@ export const traverseAST = (ast: AST) => {
       let functionYPosition = -750;
 
       child.subNodes?.forEach((subNode) => {
+        // console.log(subNode);
+        if (subNode.type === "VariableDeclaration") {
+          const v = createVariable(subNode);
+          variables[subNode.name] = v;
+        }
+
         if (subNode.type === "StateVariableDeclaration") {
+          console.log("subNode: ", subNode);
           subNode.variables?.forEach((variable) => {
-            variables[variable.name] = {
-              name: variable.name,
-              type: variable.typeName.name,
-              parameter: false,
-            };
+            const v = createVariable(variable);
+            variables[variable.name] = v;
           });
         }
-        if (subNode.type === "VariableDeclaration") {
-          subNode.variables?.forEach((variable) => {
-            variables[variable.name] = {
-              name: variable.name,
-              type: variable.typeName.name,
+
+        if (subNode.type === "StructDefinition") {
+          const structMembers = {};
+          subNode.members?.forEach((member) => {
+            structMembers[member.name] = {
+              name: member.name,
+              type: member.typeName.name,
               parameter: false,
             };
           });
+          structs[subNode.name] = {
+            name: subNode.name,
+            type: "struct",
+            parameter: false,
+            members: structMembers,
+          };
         }
 
         if (subNode.type === "FunctionDefinition") {
@@ -365,11 +299,21 @@ export const traverseAST = (ast: AST) => {
 
           functionYPosition += 750;
 
+          variables["msg.sender"] = {
+            name: "msg.sender",
+            type: "address",
+            parameter: false,
+          };
+
+          const functionName = subNode.isConstructor
+            ? "Constructor"
+            : subNode.name;
+
           const functionDeclarationNode: Node = {
             id: functionStartId,
             type: ENodeType.FUNCTION_NODE,
             data: {
-              label: "Function Start",
+              label: `${functionName} - Start`,
               type: ENodeType.FUNCTION_NODE,
               operation: EFunctionType.START,
               inputs: [], // Function declarations have no inputs, just outputs.
@@ -389,31 +333,15 @@ export const traverseAST = (ast: AST) => {
             position: { x: 0, y: functionYPosition },
           };
 
-          const functionReturnNode: Node = {
-            id: functionEndId,
-            type: ENodeType.FUNCTION_NODE,
-            data: {
-              label: "Function End",
-              type: ENodeType.FUNCTION_NODE,
-              operation: EFunctionType.END,
-              inputs: [
-                {
-                  id: "execute",
-                  type: EDataType.EXECUTE,
-                  label: "",
-                },
-                ...subNode?.returnParameters?.map((param: any) => ({
-                  id: param?.name,
-                  type: param?.typeName?.name,
-                  label: param?.name,
-                })),
-              ],
-              outputs: [],
-            },
-            position: { x: 1000, y: functionYPosition },
-          };
+          const returnParams = subNode.returnParameters
+            ? subNode?.returnParameters?.map((param: any) => ({
+                id: param?.name,
+                type: param?.typeName?.name,
+                label: param?.name,
+              }))
+            : [];
 
-          nodes = [...nodes, functionDeclarationNode, functionReturnNode];
+          nodes = [...nodes, functionDeclarationNode];
           if (subNode.type === "FunctionDefinition") {
             // Add variables for the function parameters
             subNode.parameters?.forEach((parameter) => {
@@ -436,11 +364,14 @@ export const traverseAST = (ast: AST) => {
           }
 
           if (subNode.body) {
-            // Handle statement bodies
-            subNode.body.statements?.forEach(
-              (statement: StatementsEntity | null | undefined) => {
-                if (statement?.type === "VariableDeclarationStatement") {
-                  // Push local variables to the variables object
+            const statementsToTraverse = subNode.body.statements?.filter(
+              (statement) => {
+                if (
+                  statement.type === "ExpressionStatement" ||
+                  statement.type === "IfStatement"
+                ) {
+                  return true;
+                } else if (statement.type === "VariableDeclarationStatement") {
                   statement.variables?.forEach((variable) => {
                     variables[variable.name] = {
                       name: variable.name,
@@ -450,44 +381,81 @@ export const traverseAST = (ast: AST) => {
                   });
                 }
 
-                if (
-                  statement?.type === "ExpressionStatement" &&
-                  statement.expression
-                ) {
-                  const { nodeId } = traverse(
-                    statement.expression,
-                    {
-                      x: 500,
-                      y: functionYPosition,
-                    },
-                    {
-                      functionStartId,
-                      functionEndId,
-                    }
-                  );
-
-                  edges.push({
-                    source: functionStartId,
-                    sourceHandle: "execute",
-                    target: nodeId,
-                    targetHandle: "execute",
-                    id: `${functionStartId}-${nodeId}-execute`,
-                    type: "smoothstep",
-                    style: { stroke: getEdgeColor(EDataType.EXECUTE) },
-                  });
-
-                  edges.push({
-                    source: nodeId,
-                    sourceHandle: "execute",
-                    target: functionEndId,
-                    targetHandle: "execute",
-                    id: `${nodeId}-${functionEndId}-execute`,
-                    type: "smoothstep",
-                    style: { stroke: getEdgeColor(EDataType.EXECUTE) },
-                  });
-                }
+                return false;
               }
             );
+
+            const execNodeIds = [functionStartId];
+
+            var xUpdate = 1000;
+            var yUpdate = 0;
+
+            statementsToTraverse?.forEach((statement, index) => {
+              const { nodeId } = traverse(
+                statement,
+                {
+                  x: xUpdate,
+                  y: functionYPosition,
+                },
+                {
+                  functionStartId,
+                  functionEndId,
+                }
+              );
+
+              execNodeIds.push(nodeId);
+
+              edges.push({
+                source: execNodeIds[index],
+                sourceHandle: "execute",
+                target: nodeId,
+                targetHandle: "execute",
+                id: `${execNodeIds[index]}-${nodeId}-execute`,
+                type: "bezier",
+                style: { stroke: getEdgeColor(EDataType.EXECUTE) },
+              });
+
+              xUpdate += 500;
+
+              if (index === statementsToTraverse.length - 1) {
+                edges.push({
+                  source: nodeId,
+                  sourceHandle: "execute",
+                  target: functionEndId,
+                  targetHandle: "execute",
+                  id: `${nodeId}-${functionEndId}-execute`,
+                  type: "bezier",
+                  style: {
+                    stroke: getEdgeColor(EDataType.EXECUTE),
+                  },
+                });
+              }
+            });
+
+            const functionReturnNode: Node = {
+              id: functionEndId,
+              type: ENodeType.FUNCTION_NODE,
+              data: {
+                label: `${functionName} - End`,
+                type: ENodeType.FUNCTION_NODE,
+                operation: EFunctionType.END,
+                inputs: [
+                  {
+                    id: "execute",
+                    type: EDataType.EXECUTE,
+                    label: "",
+                  },
+                  ...returnParams,
+                ],
+                outputs: [],
+              },
+              position: {
+                x: statementsToTraverse.length * 500 + 1000,
+                y: functionYPosition,
+              },
+            };
+
+            nodes.push(functionReturnNode);
           }
         }
       });
@@ -496,5 +464,7 @@ export const traverseAST = (ast: AST) => {
 
   console.log(nodes);
   console.log(edges);
+  console.log(variables);
+  console.log(structs);
   return { nodes, edges };
 };
