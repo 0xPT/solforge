@@ -25,6 +25,7 @@ interface Variable {
   type: string;
   name: string;
   parameter: boolean;
+  isStateVariable?: boolean;
 }
 
 interface IStruct {
@@ -257,7 +258,10 @@ export const traverseAST = (ast: IASTSourceUnit) => {
       child.subNodes?.forEach((subNode) => {
         if (subNode.type === "VariableDeclaration") {
           const v = createVariable(subNode);
-          variables[subNode.name] = v;
+          variables[subNode.name] = {
+            ...v,
+            isStateVariable: true,
+          };
         }
 
         if (subNode.type === "StateVariableDeclaration") {
@@ -457,6 +461,5 @@ export const traverseAST = (ast: IASTSourceUnit) => {
     }
   });
 
-  console.log(nodes);
-  return { nodes, edges };
+  return { nodes, edges, stateVariables: Object.values(variables) };
 };

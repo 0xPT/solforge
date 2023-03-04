@@ -1,17 +1,8 @@
-import {
-  Box,
-  Button,
-  ChakraProvider,
-  extendTheme,
-  Flex,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-} from "@chakra-ui/react";
+import { Box, ChakraProvider, extendTheme, Flex } from "@chakra-ui/react";
 import Sidebar from "@/components/navigation";
 import { DefaultFlow } from "@/components/flows/defaultFlow";
+import { useState } from "react";
+import { ReactFlowProvider } from "reactflow";
 
 export const Theme = extendTheme({
   fonts: {
@@ -80,56 +71,23 @@ export default function Home() {
 }
 
 const Main = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const reactFlowWidth = isOpen ? "calc(100vw - 300px)" : "calc(100vw - 100px)";
+
   return (
-    <Box h="100vh" w="100vw">
-      <Sidebar />
-      <Box h="100vh">
-        <Flex
-          w={{ base: "full", md: "calc(100vw - 300px)" }}
-          ml="300px"
-          bg="#1c1e2a"
-        >
-          <Tabs variant="unstyled">
-            <TabList
-              color="zinc.400"
-              h="40px"
-              borderBottomWidth="2px"
-              borderColor="#34384e"
-            >
-              <Tab
-                _selected={{
-                  color: "white",
-                  bg: "#34384e",
-                  fontWeight: "medium",
-                }}
-                fontWeight="normal"
-                fontSize="sm"
-              >
-                Contract.sol
-              </Tab>
-              <Tab
-                _selected={{
-                  color: "white",
-                  bg: "#34384e",
-                  fontWeight: "medium",
-                }}
-                fontWeight="normal"
-                fontSize="sm"
-              >
-                fx - addToOriginalNumber
-              </Tab>
-            </TabList>
-            <TabPanels padding={0}>
-              <TabPanel padding={0}>
-                <DefaultFlow />
-              </TabPanel>
-              <TabPanel padding={0}>
-                <DefaultFlow />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Flex>
+    <ReactFlowProvider>
+      <Box h="100vh" w="100vw">
+        <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+        <Box h="100vh">
+          <Flex
+            w={{ base: "full", md: reactFlowWidth }}
+            ml={isOpen ? "300px" : "100px"}
+            bg="#1c1e2a"
+          >
+            <DefaultFlow />
+          </Flex>
+        </Box>
       </Box>
-    </Box>
+    </ReactFlowProvider>
   );
 };

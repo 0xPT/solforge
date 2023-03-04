@@ -73,7 +73,8 @@ export const DefaultFlow = () => {
   const [flowInstance, setFlowInstance] = useState<any>(null);
 
   useEffect(() => {
-    const traversedAST = traverseAST(output);
+    const traversedAST = traverseAST(output as any);
+    const sourceCode = ast_to_source(output);
 
     setNodes(
       traversedAST.nodes.map((node) => {
@@ -81,7 +82,7 @@ export const DefaultFlow = () => {
           ...node,
           data: {
             ...node.data,
-            updateNode: (data) => getUpdateNodeFunction(node, data),
+            updateNode: (data: any) => getUpdateNodeFunction(node, data),
           },
         };
       })
@@ -93,10 +94,9 @@ export const DefaultFlow = () => {
       traversedAST.edges as IReactFlowEdge[]
     );
 
-    console.log(NodeAst);
     const sourceCode2 = ast_to_source(NodeAst);
-
-    console.log(sourceCode2);
+    // console.log(NodeAst);
+    // console.log(sourceCode2);
   }, []);
 
   const getUpdateNodeFunction = (node: any, data: any) => {
@@ -296,16 +296,13 @@ export const DefaultFlow = () => {
       contractName: "TestContract",
     });
 
-    console.log(response.data.address);
+    // console.log(response.data.address);
   };
 
   return (
     <Flex
       onContextMenu={handleContextMenu}
-      w={{
-        base: "full",
-        md: "calc(100vw - 300px)",
-      }}
+      w="full"
       h={{
         base: "full",
         md: "calc(100vh - 40px)",
