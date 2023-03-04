@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 
 export const useClickOutside = (ref: any, closeContextMenu: Function) => {
   const handleClick = (e: any) => {
-    console.log(e.target);
     if (
       ref.current &&
       !ref.current.contains(e.target) &&
