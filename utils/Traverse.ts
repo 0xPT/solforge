@@ -307,6 +307,7 @@ export const traverseAST = (ast: IASTSourceUnit) => {
             id: functionStartId,
             type: ENodeType.FUNCTION_NODE,
             data: {
+              isConstructor: subNode.isConstructor,
               label: `${functionName} - Start`,
               type: ENodeType.FUNCTION_NODE,
               operation: EFunctionType.START,
@@ -456,5 +457,6 @@ export const traverseAST = (ast: IASTSourceUnit) => {
     }
   });
 
+  console.log(nodes);
   return { nodes, edges };
 };

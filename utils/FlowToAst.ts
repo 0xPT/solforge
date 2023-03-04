@@ -71,7 +71,7 @@ export const convertNodesToAST = (
             type: "Block",
             statements: [],
           },
-          isConstructor: false,
+          isConstructor: currentNode.data.isConstructor,
           stateMutability: null,
           modifiers: [],
           visibility: "public",
@@ -82,7 +82,6 @@ export const convertNodesToAST = (
             (currentNode.data.operation as EFunctionType) ===
             EFunctionType.START
           ) {
-            console.log(currentNode);
             functionDefinition.returnParameters.push({
               type: "VariableDeclaration",
               typeName: {
@@ -157,6 +156,7 @@ export const convertNodesToAST = (
         return dataSource;
       }
       case ENodeType.EXPRESSION_NODE: {
+        console.log("sup");
         // If we are traversing through the first time, we need to create the expression statement.
         const expressionStatement = {
           type: "ExpressionStatement",
@@ -220,6 +220,7 @@ export const convertNodesToAST = (
       edge.source === functionStartNode?.id && edge.sourceHandle === "execute"
   );
   const nextNode = getNodeById(executionEdge?.target as string);
+  console.log(nextNode);
   traverse(nextNode as any, dataSource);
 
   return ast;

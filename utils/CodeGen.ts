@@ -35,8 +35,8 @@ export function ast_to_source(ast) {
             if (sub_node.stateMutability) {
               source += ` ${sub_node.stateMutability}`;
             }
-            source += " {\n";
           }
+          source += " {\n";
           for (let statement of sub_node.body.statements) {
             if (statement.type === "VariableDeclarationStatement") {
               let variables = statement.variables.map((vari) => {
