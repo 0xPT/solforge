@@ -71,7 +71,7 @@ export const convertNodesToAST = (
             type: "Block",
             statements: [],
           },
-          isConstructor: currentNode.data.isConstructor,
+          isConstructor: (currentNode.data as any).isConstructor,
           stateMutability: null,
           modifiers: [],
           visibility: "public",
@@ -126,7 +126,9 @@ export const convertNodesToAST = (
         if (dataSource.right) {
           dataSource.right = {
             type: "Identifier",
-            name: currentNode.data.label ?? currentNode.data.inputs[1].value, // Todo: fix
+            name:
+              currentNode.data.label ??
+              (currentNode.data.inputs[1] as any).value, // Todo: fix
             range: [0, 0],
           };
           return;
@@ -156,8 +158,8 @@ export const convertNodesToAST = (
         return dataSource;
       }
       case ENodeType.EXPRESSION_NODE: {
-        console.log("sup");
-        // If we are traversing through the first time, we need to create the expression statement.
+        console.log(dataSource);
+        // Expression nodes should create an expression and variable declaration in the AST.
         const expressionStatement = {
           type: "ExpressionStatement",
           expression: {
@@ -170,28 +172,29 @@ export const convertNodesToAST = (
             },
             right: {
               type: "NumberLiteral",
-              number: currentNode.data.inputs[1].value,
+              number: (currentNode.data.inputs[1] as any).value,
               range: [0, 0],
             },
           },
         };
-        dataSource.push(
-          {
-            type: "VariableDeclarationStatement",
-            variables: [
-              {
-                name: currentNode.data.label.split(" ")[1],
-                type: "VariableDeclaration",
-                typeName: {
-                  type: "ElementaryTypeName",
-                  name: currentNode.data.variableTypeName,
-                  range: [0, 0],
+        if (Array.isArray(dataSource))
+          dataSource?.push(
+            {
+              type: "VariableDeclarationStatement",
+              variables: [
+                {
+                  name: currentNode.data.label.split(" ")[1],
+                  type: "VariableDeclaration",
+                  typeName: {
+                    type: "ElementaryTypeName",
+                    name: (currentNode.data as any).variableTypeName,
+                    range: [0, 0],
+                  },
                 },
-              },
-            ],
-          },
-          expressionStatement
-        );
+              ],
+            },
+            expressionStatement
+          );
         return expressionStatement.expression;
       }
     }
@@ -206,22 +209,24 @@ export const convertNodesToAST = (
     inputNodes?.forEach((node) => traverse(node, newDataSource));
   };
 
-  // Start at the function start node and follow the execution path
-  const functionStartNode = nodes.find(
-    (node) => node.type === ENodeType.FUNCTION_NODE
-  );
-  const dataSource = AddToAst(
-    functionStartNode as any,
-    ContractDefinition.subNodes
-  );
+  const traversableNodes = nodes.filter((nd) => {
+    if (nd.data.operation === EFunctionType.END) return;
+    // Find the nodes where either the outputs or unputs contains an id of "execute"
+    const hasExecuteOutput = nd.data.outputs.find((out) => {
+      return out.id === "execute";
+    });
+    const hasInuptExecute = nd.data.inputs.find((inp) => {
+      return inp.id === "execute";
+    });
+    return hasExecuteOutput || hasInuptExecute;
+  });
 
-  const executionEdge = edges.find(
-    (edge) =>
-      edge.source === functionStartNode?.id && edge.sourceHandle === "execute"
-  );
-  const nextNode = getNodeById(executionEdge?.target as string);
-  console.log(nextNode);
-  traverse(nextNode as any, dataSource);
-
+  traversableNodes.forEach((traversableNode) => {
+    let dataSource;
+    if ((traversableNode.data.operation = EFunctionType.START))
+      dataSource = ContractDefinition.subNodes;
+    else dataSource = (ContractDefinition.subNodes[0] as any).body.statements;
+    traverse(traversableNode as any, dataSource);
+  });
   return ast;
 };
