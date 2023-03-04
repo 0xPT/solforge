@@ -23,8 +23,8 @@ import {
 import { AiOutlineFunction } from "react-icons/ai";
 import { FiX } from "react-icons/fi";
 import { VscDebugStepInto } from "react-icons/vsc";
-import { getColorOfType } from "@/utils";
 import { HiVariable } from "react-icons/hi";
+import { VariableIcon } from "./VariableIcon";
 
 interface ContextMenuProps {
   pos: {
@@ -55,22 +55,6 @@ interface IOption {
   nodeType?: ENodeType;
   additional?: EOperationType | EFunctionType;
 }
-
-const VariableIcon = ({ type }: { type: EDataType }) => {
-  return (
-    <Text
-      color={`${getColorOfType(type)}`}
-      className="ignore-click-outside"
-      letterSpacing="0.1em"
-      fontWeight="800"
-      fontSize="10px"
-      style={{ fontFeatureSettings: "'ss02'" }}
-      textTransform="uppercase"
-    >
-      {type.charAt(0).toUpperCase()}
-    </Text>
-  );
-};
 
 const Options: IOption[] = [
   {
