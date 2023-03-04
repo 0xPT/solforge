@@ -64,6 +64,8 @@ export const createSetterNode = (
   const rightNode = isLiteral(astNode.right.type)
     ? {
         type: astNode.right.type,
+        value:
+          astNode.right.type === "NumberLiteral" ? astNode.right.number : null,
       }
     : traverse(
         astNode.right,
@@ -90,6 +92,7 @@ export const createSetterNode = (
           id: "right",
           type: rightNode.type,
           label: "",
+          value: isLiteral(astNode.right.type) ? rightNode.value : null,
         },
       ],
       outputs: [

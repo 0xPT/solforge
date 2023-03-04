@@ -3,11 +3,13 @@ import { EFunctionType, ENodeType, EOperationType } from "@/types";
 import { traverseAST } from "@/utils/Traverse";
 import {
   Box,
+  Button,
   Flex,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  useDisclosure,
 } from "@chakra-ui/react";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import ReactFlow, {
@@ -27,6 +29,8 @@ import { ContextMenu } from "../common/ContextMenu";
 import CustomEdge from "./CustomEdge";
 import { exampleNodes, exampleEdges } from "./examples/AddToAmountAdded";
 import output from "@/output.json";
+import { DeployModal } from "../DeployModal";
+import axios from "axios";
 
 const initBgColor = "#000";
 
@@ -34,6 +38,17 @@ const connectionLineStyle = { stroke: "#fff" };
 const snapGrid: [number, number] = [20, 20];
 
 const defaultViewport = { x: 0, y: 0, zoom: 5 };
+
+const source = `pragma solidity 0.8.8;
+contract TestContract {
+	function testAddress() public returns (address) {
+      address anAddress;
+
+      anAddress = 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2;
+
+      return anAddress;
+    }
+}`;
 
 // Set the initial node id for dragged elements.
 let id = 0;
@@ -45,6 +60,7 @@ export const DefaultFlow = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [pos, setPos] = useState({ left: 0, top: 0 });
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const flowRef = useRef<any>(null);
   const [flowInstance, setFlowInstance] = useState<any>(null);
 
@@ -62,7 +78,7 @@ export const DefaultFlow = () => {
 
   const onAddNode = (
     type: ENodeType,
-    additional?: EOperationType | EFunctionType
+    additional?: EOperationType | EFunctionType | any
   ) => {
     switch (type) {
       case ENodeType.FUNCTION_NODE: {
@@ -115,6 +131,7 @@ export const DefaultFlow = () => {
           data: {
             label: "Set",
             type,
+            value: additional.value,
           },
           position: { x: 0, y: 0 },
         };
@@ -226,6 +243,17 @@ export const DefaultFlow = () => {
   // console.log(nodes);
   // console.log(edges);
 
+  const deployContract = async () => {
+    const response = await axios.post("/api/deploy", {
+      source,
+      network: "goerli",
+      chainId: "5",
+      contractName: "TestContract",
+    });
+
+    console.log(response.data.address);
+  };
+
   return (
     <Flex
       onContextMenu={handleContextMenu}
@@ -244,6 +272,21 @@ export const DefaultFlow = () => {
         handleContextMenuClose={handleContextMenuClose}
         onAddNode={onAddNode}
       />
+      <DeployModal
+        isOpen={isOpen}
+        onClose={onClose}
+        deployContract={deployContract}
+      />
+      <Button
+        onClick={onOpen}
+        position="absolute"
+        bottom="0"
+        right="0"
+        zIndex={99999}
+      >
+        Open Modal
+      </Button>
+
       <ReactFlow
         onInit={setFlowInstance}
         ref={flowRef}

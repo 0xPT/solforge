@@ -4,199 +4,55 @@
     {
       "type": "PragmaDirective",
       "name": "solidity",
-      "value": "^0.8.0",
-      "range": [32, 54]
+      "value": "0.8.8",
+      "range": [0, 21]
     },
     {
       "type": "ContractDefinition",
-      "name": "SimpleContract",
+      "name": "Bussin",
       "baseContracts": [],
       "subNodes": [
         {
-          "type": "StateVariableDeclaration",
-          "variables": [
-            {
-              "type": "VariableDeclaration",
-              "typeName": {
-                "type": "ElementaryTypeName",
-                "name": "string",
-                "range": [87, 92]
-              },
-              "name": "message",
-              "expression": null,
-              "visibility": "public",
-              "isStateVar": true,
-              "isDeclaredConst": false,
-              "isIndexed": false,
-              "range": [101, 107]
-            }
-          ],
-          "initialValue": null,
-          "range": [87, 108]
-        },
-        {
-          "type": "StateVariableDeclaration",
-          "variables": [
-            {
-              "type": "VariableDeclaration",
-              "typeName": {
-                "type": "ElementaryTypeName",
-                "name": "uint256",
-                "range": [114, 120]
-              },
-              "name": "count",
-              "expression": null,
-              "visibility": "public",
-              "isStateVar": true,
-              "isDeclaredConst": false,
-              "isIndexed": false,
-              "range": [129, 133]
-            }
-          ],
-          "initialValue": null,
-          "range": [114, 134]
-        },
-        {
-          "type": "StateVariableDeclaration",
-          "variables": [
+          "type": "FunctionDefinition",
+          "name": "testAddress",
+          "parameters": [],
+          "returnParameters": [
             {
               "type": "VariableDeclaration",
               "typeName": {
                 "type": "ElementaryTypeName",
                 "name": "address",
-                "range": [140, 146]
+                "range": [81, 87]
               },
-              "name": "owner",
-              "expression": null,
-              "visibility": "public",
-              "isStateVar": true,
-              "isDeclaredConst": false,
-              "isIndexed": false,
-              "range": [155, 159]
-            }
-          ],
-          "initialValue": null,
-          "range": [140, 160]
-        },
-        {
-          "type": "StateVariableDeclaration",
-          "variables": [
-            {
-              "type": "VariableDeclaration",
-              "typeName": {
-                "type": "ElementaryTypeName",
-                "name": "bool",
-                "range": [166, 169]
-              },
-              "name": "isActive",
-              "expression": null,
-              "visibility": "public",
-              "isStateVar": true,
-              "isDeclaredConst": false,
-              "isIndexed": false,
-              "range": [178, 185]
-            }
-          ],
-          "initialValue": null,
-          "range": [166, 186]
-        },
-        {
-          "type": "FunctionDefinition",
-          "name": null,
-          "parameters": [
-            {
-              "type": "VariableDeclaration",
-              "typeName": {
-                "type": "ElementaryTypeName",
-                "name": "string",
-                "range": [205, 210]
-              },
-              "name": "_message",
-              "storageLocation": "memory",
+              "name": null,
+              "storageLocation": null,
               "isStateVar": false,
               "isIndexed": false,
-              "range": [205, 226]
+              "range": [81, 87]
             }
           ],
           "body": {
             "type": "Block",
             "statements": [
               {
-                "type": "ExpressionStatement",
-                "expression": {
-                  "type": "BinaryOperation",
-                  "operator": "=",
-                  "left": {
-                    "type": "Identifier",
-                    "name": "owner",
-                    "range": [239, 243]
-                  },
-                  "right": {
-                    "type": "MemberAccess",
-                    "expression": {
-                      "type": "Identifier",
-                      "name": "msg",
-                      "range": [247, 249]
+                "type": "VariableDeclarationStatement",
+                "variables": [
+                  {
+                    "type": "VariableDeclaration",
+                    "typeName": {
+                      "type": "ElementaryTypeName",
+                      "name": "address",
+                      "range": [98, 104]
                     },
-                    "memberName": "sender",
-                    "range": [247, 256]
-                  },
-                  "range": [239, 256]
-                },
-                "range": [239, 257]
-              }
-            ],
-            "range": [229, 263]
-          },
-          "visibility": "default",
-          "modifiers": [],
-          "isConstructor": true,
-          "stateMutability": null,
-          "range": [193, 263]
-        },
-        {
-          "type": "FunctionDefinition",
-          "name": "incrementCount",
-          "parameters": [],
-          "returnParameters": null,
-          "body": {
-            "type": "Block",
-            "statements": [
-              {
-                "type": "ExpressionStatement",
-                "expression": {
-                  "type": "FunctionCall",
-                  "expression": {
-                    "type": "Identifier",
-                    "name": "require",
-                    "range": [313, 319]
-                  },
-                  "arguments": [
-                    {
-                      "type": "BinaryOperation",
-                      "operator": "==",
-                      "left": {
-                        "type": "Identifier",
-                        "name": "isActive",
-                        "range": [321, 328]
-                      },
-                      "right": {
-                        "type": "BooleanLiteral",
-                        "value": true,
-                        "range": [333, 336]
-                      },
-                      "range": [321, 336]
-                    },
-                    {
-                      "type": "StringLiteral",
-                      "value": "The contract is not active",
-                      "range": [339, 366]
-                    }
-                  ],
-                  "names": [],
-                  "range": [313, 367]
-                },
-                "range": [313, 368]
+                    "name": "anAddress",
+                    "storageLocation": null,
+                    "isStateVar": false,
+                    "isIndexed": false,
+                    "range": [98, 114]
+                  }
+                ],
+                "initialValue": null,
+                "range": [98, 115]
               },
               {
                 "type": "ExpressionStatement",
@@ -205,42 +61,41 @@
                   "operator": "=",
                   "left": {
                     "type": "Identifier",
-                    "name": "count",
-                    "range": [378, 382]
+                    "name": "anAddress",
+                    "range": [123, 131]
                   },
                   "right": {
-                    "type": "BinaryOperation",
-                    "operator": "+",
-                    "left": {
-                      "type": "Identifier",
-                      "name": "count",
-                      "range": [386, 390]
-                    },
-                    "right": {
-                      "type": "NumberLiteral",
-                      "number": "1",
-                      "subdenomination": null,
-                      "range": [394, 394]
-                    },
-                    "range": [386, 394]
+                    "type": "NumberLiteral",
+                    "number": "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2",
+                    "subdenomination": null,
+                    "range": [135, 176]
                   },
-                  "range": [378, 394]
+                  "range": [123, 176]
                 },
-                "range": [378, 395]
+                "range": [123, 177]
+              },
+              {
+                "type": "ReturnStatement",
+                "expression": {
+                  "type": "Identifier",
+                  "name": "anAddress",
+                  "range": [193, 201]
+                },
+                "range": [186, 202]
               }
             ],
-            "range": [303, 401]
+            "range": [90, 208]
           },
           "visibility": "public",
           "modifiers": [],
           "isConstructor": false,
           "stateMutability": null,
-          "range": [270, 401]
+          "range": [42, 208]
         }
       ],
       "kind": "contract",
-      "range": [57, 403]
+      "range": [23, 210]
     }
   ],
-  "range": [32, 403]
+  "range": [0, 210]
 }

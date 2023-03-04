@@ -1,6 +1,6 @@
-import { Inter } from "@next/font/google";
 import {
   Box,
+  Button,
   ChakraProvider,
   extendTheme,
   Flex,
@@ -12,8 +12,6 @@ import {
 } from "@chakra-ui/react";
 import Sidebar from "@/components/navigation";
 import { DefaultFlow } from "@/components/flows/defaultFlow";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const Theme = extendTheme({
   fonts: {
@@ -32,6 +30,43 @@ export const Theme = extendTheme({
       700: "rgb(63 63 70)",
       800: "rgb(39 39 42)",
       900: "rgb(24 24 27)",
+    },
+  },
+  components: {
+    Checkbox: {
+      baseStyle: {
+        control: {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
+          height: "16px",
+          width: "16px",
+          borderRadius: "4px",
+          border: `1px solid rgba(255, 36, 0, 1) !important`,
+          backgroundColor: "rgba(255, 36, 0, 0.5) !important",
+          borderColor: "rgba(255, 36, 0, 1) !important",
+          fontFeatureSettings: "'ss02' on",
+          outline: "none !important",
+          boxShadow: "none !important",
+          _checked: {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+            height: "16px",
+            width: "16px",
+            borderRadius: "4px",
+            border: `1px solid rgba(255, 36, 0, 1) !important`,
+            backgroundColor: "rgba(255, 36, 0, 0.5) !important",
+            borderColor: "rgba(255, 36, 0, 1) !important",
+            fontFeatureSettings: "'ss02' on",
+            color: "#ffffff !important",
+            boxShadow: "none !important",
+            outline: "none !important",
+          },
+        },
+      },
     },
   },
 });
