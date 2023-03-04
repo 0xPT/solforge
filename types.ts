@@ -56,13 +56,18 @@ export interface IDataHandle {
   id: string;
   label: string;
   type: EDataType;
+  inputs: Input[];
+  outputs: Output[];
+  operation?: EOperationType | EComparisonType | EFunctionType;
 }
 
 export interface Input {
   id: string;
   type: EDataType;
-  label?: string | null;
+  label: string;
 }
+
+export interface Output extends Input {}
 
 export enum ENodeType {
   VARIABLE_NODE = "VARIABLE_NODE",
@@ -258,6 +263,7 @@ export interface IASTContractDefinition {
   name: string;
   baseContracts: any[];
   subNodes: (IASTFunctionDefinition | IASTVariableDeclarationStatement)[];
+  kind: "Contract";
 }
 
 export interface IASTPragmaDirective {
@@ -269,7 +275,8 @@ export interface IASTPragmaDirective {
 
 export type TASTSourceUnitChildren =
   | IASTContractDefinition
-  | IASTPragmaDirective;
+  | IASTPragmaDirective
+  | IASTVariableDeclarationStatement;
 
 export interface IASTSourceUnit {
   type: "SourceUnit";

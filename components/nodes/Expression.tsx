@@ -1,13 +1,7 @@
 import { DataTypeToLetter } from "@/constants";
 import { EDataType, ENodeType, EOperationType, IDataHandle } from "@/types";
 import { getHandleColor } from "@/utils";
-import {
-  Editable,
-  EditableInput,
-  EditablePreview,
-  Flex,
-  Text,
-} from "@chakra-ui/react";
+import { Checkbox, Flex, Input, Text } from "@chakra-ui/react";
 import React from "react";
 import { Handle, Position } from "reactflow";
 
@@ -45,7 +39,7 @@ export const ExpressionNode = ({ data, selected }: IExpressionNodeProps) => {
           textTransform="uppercase"
           lineHeight={0.6}
           letterSpacing="0.1em"
-          color="#7b7e8c"
+          color="#fff"
         >
           {label}
         </Text>
@@ -58,54 +52,97 @@ export const ExpressionNode = ({ data, selected }: IExpressionNodeProps) => {
               direction="column"
               _notLast={{ marginBottom: "12px" }}
             >
-              <Flex>
-                <Handle
-                  type="target"
-                  position={Position.Left}
-                  id={input.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    position: "relative",
-                    height: 16,
-                    width: 16,
-                    borderRadius: 4,
-                    border: "none",
-                    backgroundColor: getHandleColor(input.type),
-                  }}
-                >
+              {input.type === EDataType.BOOLEAN_LITERAL ||
+              input.type === EDataType.NUMBER_LITERAL ? (
+                <>
+                  {input.type === EDataType.BOOLEAN_LITERAL ? (
+                    <Checkbox value={input.value} />
+                  ) : (
+                    <Input
+                      value={input.value}
+                      style={{
+                        display: "flex",
+                        position: "relative",
+                        height: 16,
+                        fontSize: "9.6px",
+                        minWidth: 16,
+                        borderRadius: 4,
+                        color: "white",
+                        border: "1px solid white",
+                        borderColor: getHandleColor(input.type),
+                      }}
+                      paddingLeft="4px"
+                      paddingRight="4px"
+                    />
+                  )}
+                </>
+              ) : (
+                <Flex>
+                  <Handle
+                    type="target"
+                    position={Position.Left}
+                    id={input.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      position: "relative",
+                      height: 16,
+                      width: 16,
+                      borderRadius: 4,
+                      border: "none",
+                      backgroundColor: getHandleColor(input.type),
+                    }}
+                  >
+                    {input.type === EDataType.EXECUTE && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          right: 2.3,
+                          width: 0,
+                          height: 0,
+                          borderTop: "8px solid transparent",
+                          borderBottom: "8px solid transparent",
+                          borderLeft: "8px solid #fff",
+                          transform: "translateX(8px)",
+                          borderTopLeftRadius: "4px",
+                          borderBottomLeftRadius: "4px",
+                        }}
+                      ></div>
+                    )}
+                    <Text
+                      fontWeight="500"
+                      fontSize="9.6px"
+                      textTransform="uppercase"
+                      letterSpacing="0.1em"
+                      color="#fff"
+                      mt="1.5px"
+                      ml="0.75px"
+                      style={{
+                        fontFeatureSettings: "'ss02' on",
+                      }}
+                    >
+                      {DataTypeToLetter[input.type]}
+                    </Text>
+                  </Handle>
                   <Text
+                    pointerEvents="none"
+                    lineHeight="16.5px"
                     fontWeight="500"
                     fontSize="9.6px"
                     textTransform="uppercase"
                     letterSpacing="0.1em"
-                    color="#7b7e8c"
-                    mt="1.5px"
-                    ml="0.75px"
+                    color="#fff"
                     style={{
                       fontFeatureSettings: "'ss02' on",
                     }}
+                    ml="5px"
                   >
-                    {DataTypeToLetter[input.type]}
+                    {input.label}
                   </Text>
-                </Handle>
-                <Text
-                  pointerEvents="none"
-                  lineHeight="16.5px"
-                  fontWeight="500"
-                  fontSize="9.6px"
-                  textTransform="uppercase"
-                  letterSpacing="0.1em"
-                  color="#7b7e8c"
-                  style={{
-                    fontFeatureSettings: "'ss02' on",
-                  }}
-                  ml="5px"
-                >
-                  {input.label}
-                </Text>
-              </Flex>
+                </Flex>
+              )}
             </Flex>
           ))}
         </Flex>
@@ -118,7 +155,7 @@ export const ExpressionNode = ({ data, selected }: IExpressionNodeProps) => {
                 fontSize="9.6px"
                 textTransform="uppercase"
                 letterSpacing="0.1em"
-                color="#7b7e8c"
+                color="#fff"
                 style={{
                   fontFeatureSettings: "'ss02' on",
                 }}
@@ -135,6 +172,7 @@ export const ExpressionNode = ({ data, selected }: IExpressionNodeProps) => {
                   alignItems: "center",
                   justifyContent: "center",
                   position: "relative",
+                  right: output.type === EDataType.EXECUTE ? 0 : -4,
                   height: 16,
                   width: 16,
                   borderRadius: 4,
@@ -142,13 +180,30 @@ export const ExpressionNode = ({ data, selected }: IExpressionNodeProps) => {
                   backgroundColor: getHandleColor(output.type),
                 }}
               >
+                {output.type === EDataType.EXECUTE && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 2.3,
+                      width: 0,
+                      height: 0,
+                      borderTop: "8px solid transparent",
+                      borderBottom: "8px solid transparent",
+                      borderLeft: "8px solid #fff",
+                      transform: "translateX(8px)",
+                      borderTopLeftRadius: "4px",
+                      borderBottomLeftRadius: "4px",
+                    }}
+                  ></div>
+                )}
                 <Text
                   pointerEvents="none"
                   fontWeight="500"
                   fontSize="9.6px"
                   textTransform="uppercase"
                   letterSpacing="0.1em"
-                  color="#7b7e8c"
+                  color="#fff"
                   mt="1.5px"
                   ml="0.75px"
                   style={{

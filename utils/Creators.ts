@@ -60,7 +60,6 @@ export const createSetterNode = (
   edges: any
 ) => {
   const setterId = Math.random().toString(36).substr(2, 15);
-
   const rightNode = isLiteral(astNode.right.type)
     ? {
         type: astNode.right.type,
@@ -75,11 +74,15 @@ export const createSetterNode = (
         },
         functionInfo
       );
-
+  const variableTypeName =
+    rightNode.type === "NumberLiteral" && rightNode.value.includes("0x")
+      ? "address"
+      : "uint256";
   const setterNode = {
     id: setterId,
     type: ENodeType.EXPRESSION_NODE,
     data: {
+      variableTypeName,
       label: `Set ${astNode.left.name}`,
       type: ENodeType.EXPRESSION_NODE,
       inputs: [

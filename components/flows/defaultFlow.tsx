@@ -1,5 +1,11 @@
 import { NodeElements } from "@/constants";
-import { EFunctionType, ENodeType, EOperationType } from "@/types";
+import {
+  EFunctionType,
+  ENodeType,
+  EOperationType,
+  IReactFlowEdge,
+  IReactFlowNode,
+} from "@/types";
 import { traverseAST } from "@/utils/Traverse";
 import {
   Box,
@@ -31,6 +37,8 @@ import { exampleNodes, exampleEdges } from "./examples/AddToAmountAdded";
 import output from "@/output.json";
 import { DeployModal } from "../DeployModal";
 import axios from "axios";
+import { convertNodesToAST } from "@/utils/FlowToAst";
+import { ast_to_source } from "@/utils/CodeGen";
 
 const initBgColor = "#000";
 
@@ -66,9 +74,18 @@ export const DefaultFlow = () => {
 
   useEffect(() => {
     const traversedAST = traverseAST(output);
+    const sourceCode = ast_to_source(output);
 
     setNodes(traversedAST.nodes);
     setEdges(traversedAST.edges);
+
+    const NodeAst = convertNodesToAST(
+      traversedAST.nodes as unknown as IReactFlowNode[],
+      traversedAST.edges as IReactFlowEdge[]
+    );
+    console.log(NodeAst);
+    const sourceCode2 = ast_to_source(NodeAst);
+    console.log(sourceCode2);
   }, []);
 
   const onConnect = useCallback(

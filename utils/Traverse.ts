@@ -41,7 +41,6 @@ interface VariableObject {
 }
 
 const createVariable = (variable: IASTVariableDeclaration) => {
-  console.log(variable);
   if (variable.typeName.type === "ElementaryTypeName") {
     return {
       name: variable.name,
@@ -107,7 +106,6 @@ export const traverseAST = (ast: IASTSourceUnit) => {
       case "ExpressionStatement": {
         const { nodeId } = traverse(astNode.expression, position, functionInfo);
 
-        console.log("Expression ", nodeId);
         return {
           nodeId,
         };
@@ -115,7 +113,6 @@ export const traverseAST = (ast: IASTSourceUnit) => {
       case "IfStatement": {
         const { nodeId } = traverse(astNode.condition, position, functionInfo);
 
-        console.log("If ", nodeId);
         return {
           nodeId,
         };
@@ -193,7 +190,6 @@ export const traverseAST = (ast: IASTSourceUnit) => {
           edges
         );
       case "MemberAccess": {
-        console.log(astNode);
         return createMemberAccessNode(
           traverse,
           astNode,
@@ -259,14 +255,12 @@ export const traverseAST = (ast: IASTSourceUnit) => {
       let functionYPosition = -750;
 
       child.subNodes?.forEach((subNode) => {
-        // console.log(subNode);
         if (subNode.type === "VariableDeclaration") {
           const v = createVariable(subNode);
           variables[subNode.name] = v;
         }
 
         if (subNode.type === "StateVariableDeclaration") {
-          console.log("subNode: ", subNode);
           subNode.variables?.forEach((variable) => {
             const v = createVariable(variable);
             variables[variable.name] = v;
@@ -462,9 +456,5 @@ export const traverseAST = (ast: IASTSourceUnit) => {
     }
   });
 
-  console.log(nodes);
-  console.log(edges);
-  console.log(variables);
-  console.log(structs);
   return { nodes, edges };
 };

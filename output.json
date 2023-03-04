@@ -5,7 +5,10 @@
       "type": "PragmaDirective",
       "name": "solidity",
       "value": "0.8.8",
-      "range": [0, 21]
+      "range": [
+        0,
+        21
+      ]
     },
     {
       "type": "ContractDefinition",
@@ -22,13 +25,19 @@
               "typeName": {
                 "type": "ElementaryTypeName",
                 "name": "address",
-                "range": [81, 87]
+                "range": [
+                  81,
+                  87
+                ]
               },
               "name": null,
               "storageLocation": null,
               "isStateVar": false,
               "isIndexed": false,
-              "range": [81, 87]
+              "range": [
+                81,
+                87
+              ]
             }
           ],
           "body": {
@@ -42,17 +51,26 @@
                     "typeName": {
                       "type": "ElementaryTypeName",
                       "name": "address",
-                      "range": [98, 104]
+                      "range": [
+                        98,
+                        104
+                      ]
                     },
                     "name": "anAddress",
                     "storageLocation": null,
                     "isStateVar": false,
                     "isIndexed": false,
-                    "range": [98, 114]
+                    "range": [
+                      98,
+                      114
+                    ]
                   }
                 ],
                 "initialValue": null,
-                "range": [98, 115]
+                "range": [
+                  98,
+                  115
+                ]
               },
               {
                 "type": "ExpressionStatement",
@@ -62,40 +80,70 @@
                   "left": {
                     "type": "Identifier",
                     "name": "anAddress",
-                    "range": [123, 131]
+                    "range": [
+                      124,
+                      132
+                    ]
                   },
                   "right": {
                     "type": "NumberLiteral",
                     "number": "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2",
                     "subdenomination": null,
-                    "range": [135, 176]
+                    "range": [
+                      136,
+                      177
+                    ]
                   },
-                  "range": [123, 176]
+                  "range": [
+                    124,
+                    177
+                  ]
                 },
-                "range": [123, 177]
+                "range": [
+                  124,
+                  178
+                ]
               },
               {
                 "type": "ReturnStatement",
                 "expression": {
                   "type": "Identifier",
                   "name": "anAddress",
-                  "range": [193, 201]
+                  "range": [
+                    194,
+                    202
+                  ]
                 },
-                "range": [186, 202]
+                "range": [
+                  187,
+                  203
+                ]
               }
             ],
-            "range": [90, 208]
+            "range": [
+              90,
+              209
+            ]
           },
           "visibility": "public",
           "modifiers": [],
           "isConstructor": false,
           "stateMutability": null,
-          "range": [42, 208]
+          "range": [
+            42,
+            209
+          ]
         }
       ],
       "kind": "contract",
-      "range": [23, 210]
+      "range": [
+        23,
+        211
+      ]
     }
   ],
-  "range": [0, 210]
+  "range": [
+    0,
+    211
+  ]
 }
