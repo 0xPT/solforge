@@ -74,19 +74,47 @@ export const DefaultFlow = () => {
 
   useEffect(() => {
     const traversedAST = traverseAST(output);
-    const sourceCode = ast_to_source(output);
 
-    setNodes(traversedAST.nodes);
+    setNodes(
+      traversedAST.nodes.map((node) => {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            updateNode: (data) => getUpdateNodeFunction(node, data),
+          },
+        };
+      })
+    );
     setEdges(traversedAST.edges);
 
     const NodeAst = convertNodesToAST(
       traversedAST.nodes as unknown as IReactFlowNode[],
       traversedAST.edges as IReactFlowEdge[]
     );
+
     console.log(NodeAst);
     const sourceCode2 = ast_to_source(NodeAst);
+
     console.log(sourceCode2);
   }, []);
+
+  const getUpdateNodeFunction = (node: any, data: any) => {
+    setNodes((nodes) => {
+      return nodes.map((n) => {
+        if (n.id === node.id) {
+          const newNode = {
+            ...n,
+            data: {
+              ...data,
+            },
+          };
+          return newNode;
+        }
+        return n;
+      });
+    });
+  };
 
   const onConnect = useCallback(
     (params: Edge<any> | Connection) => setEdges((eds) => addEdge(params, eds)),

@@ -36,8 +36,6 @@ export const VariableNode = ({ data, selected }: IVariableNodeProps) => {
 
   const outputWidth = longestOutput * 7;
 
-  console.log(outputWidth);
-
   return (
     <Flex
       minW={`${outputWidth + 75}px`}

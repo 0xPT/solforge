@@ -15,7 +15,27 @@ interface IExpressionNodeProps {
 }
 
 export const ExpressionNode = ({ data, selected }: IExpressionNodeProps) => {
-  const { id, type, label, inputs, outputs } = data;
+  const { id, type, label, inputs, outputs, updateNode } = data;
+
+  const onInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+    checkbox?: boolean
+  ) => {
+    updateNode({
+      ...data,
+      inputs: inputs.map((input, i) => {
+        if (i === index) {
+          return {
+            ...input,
+            value: checkbox ? e.target.checked : e.target.value,
+          };
+        }
+        return input;
+      }),
+    });
+  };
+
   return (
     <Flex
       position="relative"
@@ -56,9 +76,17 @@ export const ExpressionNode = ({ data, selected }: IExpressionNodeProps) => {
               input.type === EDataType.NUMBER_LITERAL ? (
                 <>
                   {input.type === EDataType.BOOLEAN_LITERAL ? (
-                    <Checkbox value={input.value} />
+                    <Checkbox
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        onInputChange(e, index, true)
+                      }
+                      isChecked={input.value}
+                    />
                   ) : (
                     <Input
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        onInputChange(e, index, false)
+                      }
                       value={input.value}
                       style={{
                         display: "flex",
@@ -73,6 +101,7 @@ export const ExpressionNode = ({ data, selected }: IExpressionNodeProps) => {
                       }}
                       paddingLeft="4px"
                       paddingRight="4px"
+                      width="50px"
                     />
                   )}
                 </>

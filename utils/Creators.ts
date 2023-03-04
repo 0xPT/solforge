@@ -10,6 +10,17 @@ interface VariableObject {
   [key: string]: Variable;
 }
 
+export const getLiteralValue = (astNode: any) => {
+  switch (astNode.type) {
+    case "BooleanLiteral":
+      return astNode.value;
+    case "StringLiteral":
+      return astNode.value;
+    case "NumberLiteral":
+      return astNode.number;
+  }
+};
+
 export const isLiteral = (type: string) => {
   return (
     type === "BooleanLiteral" ||
@@ -63,8 +74,7 @@ export const createSetterNode = (
   const rightNode = isLiteral(astNode.right.type)
     ? {
         type: astNode.right.type,
-        value:
-          astNode.right.type === "NumberLiteral" ? astNode.right.number : null,
+        value: getLiteralValue(astNode.right),
       }
     : traverse(
         astNode.right,
@@ -74,8 +84,9 @@ export const createSetterNode = (
         },
         functionInfo
       );
+
   const variableTypeName =
-    rightNode.type === "NumberLiteral" && rightNode.value.includes("0x")
+    rightNode.type === "NumberLiteral" && rightNode?.value?.includes("0x")
       ? "address"
       : "uint256";
   const setterNode = {
@@ -122,8 +133,10 @@ export const createSetterNode = (
 
   if (!isLiteral(astNode.right.type)) {
     edges.push({
-      source: rightNode?.nodeId,
-      sourceHandle: "output",
+      source: rightNode.isParameter
+        ? functionInfo.functionStartId
+        : rightNode?.nodeId,
+      sourceHandle: rightNode.isParameter ? rightNode.label : "output",
       target: setterId,
       targetHandle: `right`,
       id: `${rightNode?.nodeId}-${setterId}-right`,
@@ -260,6 +273,7 @@ export const createOperatorNode = (
   const rightNode = isLiteral(astNode.right.type)
     ? {
         type: astNode.right.type,
+        value: getLiteralValue(astNode.right),
       }
     : traverse(
         astNode.right,
@@ -286,7 +300,7 @@ export const createOperatorNode = (
         {
           id: "right",
           type: rightNode.type,
-          value: astNode.right.value ?? null,
+          value: isLiteral(rightNode.type) ? rightNode.value : null,
           label: "",
         },
       ],
@@ -380,59 +394,34 @@ export const createMemberAccessNode = (
 ) => {
   const memberAccessNodeId = Math.random().toString(36).substr(2, 15);
 
-  const leftNode = traverse(
-    astNode.expression,
-    {
-      x: position.x - 500,
-      y: position.y,
-    },
-    functionInfo
-  );
+  if (astNode.expression.name === "msg" && astNode.memberName === "sender") {
+    const memberAccessNode = {
+      id: memberAccessNodeId,
+      type: ENodeType.VARIABLE_NODE,
+      data: {
+        label: "msg.sender",
+        type: ENodeType.VARIABLE_NODE,
+        inputs: [],
+        outputs: [
+          {
+            id: "output",
+            type: EDataType.ADDRESS,
+            label: "msg.sender",
+          },
+        ],
+      },
+      position,
+    };
 
-  const memberAccessNode = {
-    id: memberAccessNodeId,
-    type: ENodeType.MEMBER_ACCESS_NODE,
-    data: {
-      label: astNode.operator,
-      type: ENodeType.MEMBER_ACCESS_NODE,
-      inputs: [
-        {
-          id: "left",
-          type: leftNode.type,
-          label: "",
-        },
-      ],
-      outputs: [
-        {
-          id: "output",
-          type: EDataType.ANY,
-          label: "",
-        },
-      ],
-    },
-    position,
-  };
+    nodes.push(memberAccessNode);
 
-  nodes.push(memberAccessNode);
-  edges.push({
-    source: leftNode.isParameter
-      ? functionInfo.functionStartId
-      : leftNode?.nodeId,
-    sourceHandle: leftNode.isParameter ? leftNode.label : "output",
-
-    target: memberAccessNodeId,
-
-    targetHandle: "left",
-    id: `${leftNode?.nodeId}-${memberAccessNodeId}-left`,
-    type: "bezier",
-    style: { stroke: getEdgeColor(leftNode.type) },
-  });
-  return {
-    nodeId: memberAccessNodeId,
-    handleId: "output",
-    type: EDataType.ANY,
-    label: astNode.operator,
-  };
+    return {
+      nodeId: memberAccessNodeId,
+      handleId: "output",
+      type: EDataType.ADDRESS,
+      label: "msg.sender",
+    };
+  }
 };
 
 export const createIndexAccessNode = (

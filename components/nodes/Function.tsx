@@ -105,7 +105,7 @@ export const FunctionNode = ({ data, selected }: IFunctionNodeProps) => {
                     fontSize="9.6px"
                     textTransform="uppercase"
                     letterSpacing="0.1em"
-                    color="#7b7e8c"
+                    color="#fff"
                     mt="1.5px"
                     ml="0.75px"
                     style={{

@@ -72,7 +72,26 @@ const OperationIcon = ({ operation }: { operation: EOperationType }) => {
 };
 
 export const OperationNode = ({ data, selected }: IOperationNodeProps) => {
-  const { id, type, label, operation, inputs, outputs } = data;
+  const { id, type, label, operation, inputs, outputs, updateNode } = data;
+
+  const onInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+    checkbox?: boolean
+  ) => {
+    updateNode({
+      ...data,
+      inputs: inputs.map((input, i) => {
+        if (i === index) {
+          return {
+            ...input,
+            value: checkbox ? e.target.checked : e.target.value,
+          };
+        }
+        return input;
+      }),
+    });
+  };
 
   return (
     <Flex
@@ -95,20 +114,32 @@ export const OperationNode = ({ data, selected }: IOperationNodeProps) => {
               input.type === EDataType.NUMBER_LITERAL ? (
                 <>
                   {input.type === EDataType.BOOLEAN_LITERAL ? (
-                    <Checkbox value={input.value} />
+                    <Checkbox
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        onInputChange(e, index, true)
+                      }
+                      isChecked={input.value}
+                    />
                   ) : (
                     <Input
-                      // value={input.value}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        onInputChange(e, index, false)
+                      }
+                      value={input.value}
                       style={{
                         display: "flex",
                         position: "relative",
                         height: 16,
-                        width: 24,
+                        fontSize: "9.6px",
+                        minWidth: 16,
                         borderRadius: 4,
                         color: "white",
                         border: "1px solid white",
                         borderColor: getHandleColor(input.type),
                       }}
+                      paddingLeft="4px"
+                      paddingRight="4px"
+                      width="50px"
                     />
                   )}
                 </>

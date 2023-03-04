@@ -7,7 +7,7 @@ import {
   IDataHandle,
 } from "@/types";
 import { getHandleColor } from "@/utils";
-import { Checkbox, Flex, Text } from "@chakra-ui/react";
+import { Checkbox, Flex, Input, Text } from "@chakra-ui/react";
 import React from "react";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { Handle, Position } from "reactflow";
@@ -69,7 +69,27 @@ const OperationIcon = ({ operation }: { operation: EComparisonType }) => {
 };
 
 export const ComparisonNode = ({ data, selected }: IComparisonNodeProps) => {
-  const { id, type, label, operation, inputs, outputs } = data;
+  const { id, type, label, operation, inputs, outputs, updateNode } = data;
+
+  const onInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+    checkbox?: boolean
+  ) => {
+    updateNode({
+      ...data,
+      inputs: inputs.map((input, i) => {
+        if (i === index) {
+          return {
+            ...input,
+            value: checkbox ? e.target.checked : e.target.value,
+          };
+        }
+        return input;
+      }),
+    });
+  };
+
   return (
     <Flex
       position="relative"
@@ -86,9 +106,41 @@ export const ComparisonNode = ({ data, selected }: IComparisonNodeProps) => {
               key={input.id}
               direction="column"
               _notLast={{ marginBottom: "12px" }}
+              zIndex={50}
             >
-              {input.type === EDataType.BOOLEAN_LITERAL ? (
-                <Checkbox value={input.value} />
+              {input.type === EDataType.BOOLEAN_LITERAL ||
+              input.type === EDataType.NUMBER_LITERAL ? (
+                <>
+                  {input.type === EDataType.BOOLEAN_LITERAL ? (
+                    <Checkbox
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        onInputChange(e, index, true)
+                      }
+                      isChecked={input.value}
+                    />
+                  ) : (
+                    <Input
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        onInputChange(e, index, false)
+                      }
+                      value={input.value}
+                      style={{
+                        display: "flex",
+                        position: "relative",
+                        height: 16,
+                        fontSize: "9.6px",
+                        minWidth: 16,
+                        borderRadius: 4,
+                        color: "white",
+                        border: "1px solid white",
+                        borderColor: getHandleColor(input.type),
+                      }}
+                      paddingLeft="4px"
+                      paddingRight="4px"
+                      width="50px"
+                    />
+                  )}
+                </>
               ) : (
                 <Flex>
                   <Handle
