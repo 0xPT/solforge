@@ -91,12 +91,14 @@ export const DefaultFlow = () => {
 
     const NodeAst = convertNodesToAST(
       traversedAST.nodes as unknown as IReactFlowNode[],
-      traversedAST.edges as IReactFlowEdge[]
+      traversedAST.edges as IReactFlowEdge[],
+      traversedAST.stateVariables
     );
+    console.log(NodeAst);
+    console.log(traversedAST.stateVariables);
 
     const sourceCode2 = ast_to_source(NodeAst);
-    // console.log(NodeAst);
-    // console.log(sourceCode2);
+    console.log(sourceCode2);
   }, []);
 
   const getUpdateNodeFunction = (node: any, data: any) => {

@@ -1,5 +1,6 @@
 // @ts-nocheck
 export function ast_to_source(ast) {
+  console.log(ast);
   let source = "";
 
   // Recursively traverse the AST nodes
@@ -91,6 +92,11 @@ export function ast_to_source(ast) {
             }
           }
           source += `  }\n`;
+        } else if (sub_node.type === "StateVariableDeclaration") {
+          let variables = sub_node.variables.map((vari) => {
+            return `${vari.typeName.name} ${vari.name}`;
+          });
+          source += `  ${variables.join(", ")};\n`;
         }
       }
       source += `}\n`;
@@ -107,6 +113,7 @@ export function ast_to_source(ast) {
 }
 
 export function expression_to_source(expr) {
+  // console.log(expr);
   if (expr.type === "Identifier") {
     return expr.name;
   } else if (expr.type === "NumberLiteral") {

@@ -9,15 +9,47 @@ import {
   IASTContractDefinition,
   EFunctionType,
 } from "@/types";
+import { isLiteral } from "./Creators";
 
 export const convertNodesToAST = (
   nodes: IReactFlowNode[],
-  edges: IReactFlowEdge[]
+  edges: IReactFlowEdge[],
+  variables: any
 ): IASTSourceUnit => {
+  console.log(nodes);
+  const stateVariables = variables
+    .filter((variable) => {
+      if (variable.isStateVariable) {
+        return true;
+      }
+    })
+    .map((variable) => {
+      return {
+        type: "StateVariableDeclaration",
+        variables: [
+          {
+            typeName: {
+              type: "ElementaryTypeName",
+              name: variable.type,
+              range: [0, 0],
+            },
+            type: "VariableDeclaration",
+            visibility: "public",
+            expression: null,
+            name: variable.name,
+            isStateVar: true,
+            isIndexed: false,
+            isDeclaredConst: false,
+            range: [0, 0],
+          },
+        ],
+        initialValue: null,
+      };
+    });
   const ContractDefinition: IASTContractDefinition = {
     type: "ContractDefinition",
     name: "Contract",
-    subNodes: [],
+    subNodes: [...stateVariables],
     baseContracts: [],
     kind: "Contract",
   };
@@ -62,6 +94,27 @@ export const convertNodesToAST = (
 
     switch (nodeType) {
       case ENodeType.FUNCTION_NODE: {
+        if (dataSource.operator === "=") {
+          if (!dataSource.right) {
+            dataSource.right = {
+              type: "Identifier",
+              name: (currentNode.data.outputs[1] as any).label, // Todo: fix
+              range: [0, 0],
+            };
+          }
+          if (!dataSource.left) {
+            dataSource.left = {
+              type: "Identifier",
+              name:
+                currentNode.data.label ??
+                (currentNode.data.outputs[0] as any).label, // Todo: fix
+              range: [0, 0],
+            };
+          }
+
+          return dataSource;
+        }
+
         const functionDefinition: IASTFunctionDefinition = {
           type: "FunctionDefinition",
           name: currentNode.data.label.split(" ")[0],
@@ -77,62 +130,87 @@ export const convertNodesToAST = (
           visibility: "public",
           range: [0, 0],
         };
+
         currentNode.data.outputs.forEach((output) => {
           if (
-            (currentNode.data.operation as EFunctionType) ===
-            EFunctionType.START
+            (currentNode.data.operation as EFunctionType) === EFunctionType.END
           ) {
-            functionDefinition.returnParameters.push({
-              type: "VariableDeclaration",
-              typeName: {
-                type: "ElementaryTypeName",
-                name: output.type,
+            if (output.type != EDataType.EXECUTE) {
+              functionDefinition.returnParameters.push({
+                type: "VariableDeclaration",
+                typeName: {
+                  type: "ElementaryTypeName",
+                  name: output.type,
+                  range: [0, 0],
+                },
+                name: output.label,
+                storageLocation: null,
+                isStateVar: false,
+                isIndexed: false,
                 range: [0, 0],
-              },
-              name: output.label,
-              storageLocation: null,
-              isStateVar: false,
-              isIndexed: false,
-              range: [0, 0],
-            });
+              });
+            }
           } else {
-            functionDefinition.parameters.push({
-              type: "VariableDeclaration",
-              typeName: {
-                type: "ElementaryTypeName",
-                name: output.type.toLowerCase(),
+            if (output.type != EDataType.EXECUTE) {
+              functionDefinition.parameters.push({
+                type: "VariableDeclaration",
+                typeName: {
+                  type: "ElementaryTypeName",
+                  name: output.type.toLowerCase(),
+                  range: [0, 0],
+                },
+                name: output.label,
+                storageLocation: null,
+                isStateVar: false,
+                isIndexed: false,
                 range: [0, 0],
-              },
-              name: output.label,
-              storageLocation: null,
-              isStateVar: false,
-              isIndexed: false,
-              range: [0, 0],
-            });
+              });
+            }
           }
         });
 
         if (Array.isArray(dataSource)) {
           dataSource.push(functionDefinition);
-          return dataSource[0].body.statements;
+          return dataSource[stateVariables.length]?.body?.statements;
         }
 
-        break;
+        return;
       }
       // Handle variable declarations
       case ENodeType.VARIABLE_NODE: {
+        console.log(currentNode);
+        console.log(dataSource);
         // If the variable declaration is part of a binary operation the dataSource will contain the left side of a binary operation with existing data.
         // Below will add the right side of the binary operation to the dataSource.
-        if (dataSource.right) {
-          dataSource.right = {
-            type: "Identifier",
-            name:
-              currentNode.data.label ??
-              (currentNode.data.inputs[1] as any).value, // Todo: fix
+        if (!(dataSource.type === "FunctionCall")) {
+          if (!dataSource.right) {
+            dataSource.right = {
+              type: "Identifier",
+              name:
+                currentNode.data.label ??
+                (currentNode.data.inputs[1] as any).value, // Todo: fix
+              range: [0, 0],
+            };
+          }
+          if (!dataSource.left) {
+            dataSource.left = {
+              type: "Identifier",
+              name:
+                currentNode.data.label ??
+                (currentNode.data.inputs[0] as any).value, // Todo: fix
+              range: [0, 0],
+            };
+          }
+        }
+
+        if (dataSource.type === "FunctionCall") {
+          dataSource.arguments[1] = {
+            type: "StringLiteral",
+            value: currentNode.data.label,
             range: [0, 0],
           };
-          return;
         }
+
         const variableDeclaration: IASTVariableDeclarationStatement = {
           type: "VariableDeclarationStatement",
           variables: [],
@@ -154,11 +232,76 @@ export const convertNodesToAST = (
             range: [0, 0],
           });
         });
-        dataSource.push(variableDeclaration);
+
+        if (Array.isArray(dataSource)) {
+          dataSource.push(variableDeclaration);
+        }
         return dataSource;
       }
+      case ENodeType.OPERATION_NODE: {
+        const leftIsLiteral = isLiteral(currentNode.data.inputs[0].type);
+        const rightIsLiteral = isLiteral(currentNode.data.inputs[1].type);
+
+        const operationStatement = {
+          type: "BinaryOperation",
+          operator: currentNode.data.label,
+          left: leftIsLiteral ? getLiteral(currentNode.data.inputs[0]) : null,
+          right: rightIsLiteral ? getLiteral(currentNode.data.inputs[1]) : null,
+        };
+
+        dataSource.right = operationStatement;
+        if (dataSource.operator === "=") {
+          return dataSource.right;
+        }
+        return;
+      }
+      case ENodeType.REQUIRE_NODE: {
+        console.log("require node", currentNode);
+
+        const requireStatement = {
+          type: "ExpressionStatement",
+          expression: {
+            type: "FunctionCall",
+            expression: {
+              type: "Identifier",
+              name: "require",
+              range: [0, 0],
+            },
+            arguments: [
+              {},
+              {
+                type: "StringLiteral",
+                value: currentNode.data.inputs[2].value,
+                range: [0, 0],
+              },
+            ],
+          },
+        };
+
+        if (Array.isArray(dataSource)) {
+          dataSource.push(requireStatement);
+        }
+
+        return requireStatement.expression;
+      }
+      case ENodeType.COMPARISON_NODE: {
+        const leftIsLiteral = isLiteral(currentNode.data.inputs[0].type);
+        const rightIsLiteral = isLiteral(currentNode.data.inputs[1].type);
+
+        const comparisonStatement = {
+          type: "BinaryOperation",
+          operator: currentNode.data.label,
+          left: leftIsLiteral ? getLiteral(currentNode.data.inputs[0]) : null,
+          right: rightIsLiteral ? getLiteral(currentNode.data.inputs[1]) : null,
+        };
+
+        dataSource.arguments[0] = comparisonStatement;
+
+        return comparisonStatement;
+      }
       case ENodeType.EXPRESSION_NODE: {
-        console.log(dataSource);
+        const isRightLiteral = isLiteral(currentNode.data.inputs[1].type);
+
         // Expression nodes should create an expression and variable declaration in the AST.
         const expressionStatement = {
           type: "ExpressionStatement",
@@ -170,37 +313,58 @@ export const convertNodesToAST = (
               name: currentNode.data.label.split(" ")[1],
               range: [0, 0],
             },
-            right: {
-              type: "NumberLiteral",
-              number: (currentNode.data.inputs[1] as any).value,
-              range: [0, 0],
-            },
+            right: isRightLiteral
+              ? getLiteral(currentNode.data.inputs[1])
+              : null,
           },
         };
-        if (Array.isArray(dataSource))
-          dataSource?.push(
-            {
-              type: "VariableDeclarationStatement",
-              variables: [
-                {
-                  name: currentNode.data.label.split(" ")[1],
-                  type: "VariableDeclaration",
-                  typeName: {
-                    type: "ElementaryTypeName",
-                    name: (currentNode.data as any).variableTypeName,
-                    range: [0, 0],
+
+        if (Array.isArray(dataSource)) {
+          const isStateVariable =
+            variables.findIndex(
+              (v) => v.name === currentNode.data.label.split(" ")[1]
+            ) > -1;
+
+          if (!isStateVariable) {
+            dataSource?.push(
+              {
+                type: "VariableDeclarationStatement",
+                variables: [
+                  {
+                    name: currentNode.data.label.split(" ")[1],
+                    type: "VariableDeclaration",
+                    typeName: {
+                      type: "ElementaryTypeName",
+                      name: (currentNode.data as any).variableTypeName,
+                      range: [0, 0],
+                    },
                   },
-                },
-              ],
-            },
-            expressionStatement
-          );
-        return expressionStatement.expression;
+                ],
+              },
+              expressionStatement
+            );
+          } else {
+            dataSource?.push(expressionStatement);
+          }
+          if (isRightLiteral) {
+            return;
+          }
+          return expressionStatement.expression;
+        }
+
+        return;
       }
     }
   };
 
   const traverse = (node: IReactFlowNode, dataSource: any) => {
+    // expression_node
+    // data source its going to be function.body.statements
+
+    // operation_node
+    //
+
+    // adding to ast is doing datasource.right or datasource.left or datasource.push (which is only from a function)
     const newDataSource = AddToAst(node, dataSource);
     const inputNodes = getInputNodes(node);
     if (!inputNodes || !newDataSource) {
@@ -221,12 +385,60 @@ export const convertNodesToAST = (
     return hasExecuteOutput || hasInuptExecute;
   });
 
+  let index = stateVariables.length;
+
   traversableNodes.forEach((traversableNode) => {
     let dataSource;
-    if ((traversableNode.data.operation = EFunctionType.START))
+    if (traversableNode.data.operation === EFunctionType.START) {
       dataSource = ContractDefinition.subNodes;
-    else dataSource = (ContractDefinition.subNodes[0] as any).body.statements;
+      index++;
+    } else {
+      dataSource = (ContractDefinition.subNodes[index - 1] as any).body
+        .statements;
+    }
     traverse(traversableNode as any, dataSource);
   });
   return ast;
+};
+
+const getLiteral = (input) => {
+  const { id, label, type, value, variableName } = input;
+
+  if (type == EDataType.STRING) {
+    return {
+      type: "Identifier",
+      name: variableName,
+      range: [0, 0],
+    };
+  } else if (type == EDataType.ADDRESS) {
+    return {
+      type: "MemberAccess",
+      expression: {
+        type: "Identifier",
+        name: "msg",
+        range: [275, 277],
+      },
+      memberName: "sender",
+      range: [275, 284],
+    };
+  } else if (type == EDataType.BOOLEAN_LITERAL) {
+    return {
+      type: "BooleanLiteral",
+      value: value,
+      range: [0, 0],
+    };
+  } else if (type == EDataType.NUMBER_LITERAL) {
+    return {
+      type: "NumberLiteral",
+      number: value,
+      subdenomination: null,
+      range: [0, 0],
+    };
+  } else {
+    return {
+      type: "Identifier",
+      name: variableName,
+      range: [0, 0],
+    };
+  }
 };

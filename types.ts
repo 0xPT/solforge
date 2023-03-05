@@ -39,6 +39,7 @@ export enum EDataType {
   ARRAY = "array",
   BOOLEAN_LITERAL = "BooleanLiteral",
   NUMBER_LITERAL = "NumberLiteral",
+  STRING_LITERAL = "StringLiteral",
 }
 
 export interface IVariable {

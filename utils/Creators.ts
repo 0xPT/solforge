@@ -104,9 +104,12 @@ export const createSetterNode = (
         },
         {
           id: "right",
+          variableName: rightNode.label,
           type: rightNode.type,
           label: "",
-          value: isLiteral(astNode.right.type) ? rightNode.value : null,
+          value: isLiteral(astNode.right.type)
+            ? rightNode.value
+            : rightNode.label,
         },
       ],
       outputs: [
@@ -196,11 +199,13 @@ export const createComparisonNode = (
       inputs: [
         {
           id: "left",
+          variableName: leftNode.variableName,
           type: leftNode.type,
           label: "",
         },
         {
           id: "right",
+          variableName: rightNode.variableName,
           type: rightNode.type,
           label: "",
           value: astNode.right.value ?? null,
@@ -296,9 +301,11 @@ export const createOperatorNode = (
           id: "left",
           type: leftNode.type,
           label: "",
+          variableName: leftNode.variableName,
         },
         {
           id: "right",
+          variableName: rightNode.variableName,
           type: rightNode.type,
           value: isLiteral(rightNode.type) ? rightNode.value : null,
           label: "",
@@ -361,6 +368,7 @@ export const createBooleanLiteralNode = (
     id: booleanNodeId,
     type: ENodeType.VARIABLE_NODE,
     data: {
+      isParameter: false,
       label: astNode.value,
       type: ENodeType.VARIABLE_NODE,
       inputs: [],
@@ -390,7 +398,8 @@ export const createMemberAccessNode = (
   position: any,
   functionInfo: any,
   nodes: any,
-  edges: any
+  edges: any,
+  variables: any
 ) => {
   const memberAccessNodeId = Math.random().toString(36).substr(2, 15);
 
@@ -399,6 +408,7 @@ export const createMemberAccessNode = (
       id: memberAccessNodeId,
       type: ENodeType.VARIABLE_NODE,
       data: {
+        isParameter: false,
         label: "msg.sender",
         type: ENodeType.VARIABLE_NODE,
         inputs: [],
@@ -505,6 +515,7 @@ export const createStringLiteralNode = (
     id: stringNodeId,
     type: ENodeType.VARIABLE_NODE,
     data: {
+      isParameter: false,
       label: astNode.value,
       type: ENodeType.VARIABLE_NODE,
       inputs: [],
@@ -579,6 +590,7 @@ export const createFunctionCallNode = (
           id: "right",
           type: EDataType.STRING,
           label: "Revert Message",
+          variableName: rightNode.label,
         },
       ],
       outputs: [
@@ -637,6 +649,7 @@ export const createNumberLiteralNode = (
     id: numberNodeId,
     type: ENodeType.VARIABLE_NODE,
     data: {
+      isParameter: false,
       label: astNode.number,
       type: ENodeType.VARIABLE_NODE,
       inputs: [],

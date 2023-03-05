@@ -41,12 +41,16 @@ interface VariableObject {
   [key: string]: Variable;
 }
 
-const createVariable = (variable: IASTVariableDeclaration) => {
+const createVariable = (
+  variable: IASTVariableDeclaration,
+  isStateVariable: boolean
+) => {
   if (variable.typeName.type === "ElementaryTypeName") {
     return {
       name: variable.name,
       type: variable.typeName.name,
       parameter: false,
+      isStateVariable,
     };
   } else if (variable.typeName.type === "Mapping") {
     return {
@@ -67,6 +71,7 @@ const createVariable = (variable: IASTVariableDeclaration) => {
         name: variable.name,
         type: "array",
         parameter: false,
+        isStateVariable,
       };
     } else {
       return {
@@ -74,6 +79,7 @@ const createVariable = (variable: IASTVariableDeclaration) => {
         type: "array",
         value: variable.typeName.baseTypeName.namePath,
         valueType: variable.typeName.baseTypeName.type,
+        isStateVariable,
       };
     }
   }
@@ -140,6 +146,7 @@ export const traverseAST = (ast: IASTSourceUnit) => {
             id: variableNodeId,
             type: ENodeType.VARIABLE_NODE,
             data: {
+              isParameter,
               label: astNode.name,
               type: ENodeType.VARIABLE_NODE,
               inputs: [],
@@ -160,6 +167,7 @@ export const traverseAST = (ast: IASTSourceUnit) => {
           nodeId: variableNodeId,
           handleId: "output",
           type: variableToDataType(variables[name]),
+          variableName: name,
           label: name,
           isParameter,
         };
@@ -197,7 +205,8 @@ export const traverseAST = (ast: IASTSourceUnit) => {
           position,
           functionInfo,
           nodes,
-          edges
+          edges,
+          variables
         );
       }
       case "IndexAccess": {
@@ -257,17 +266,20 @@ export const traverseAST = (ast: IASTSourceUnit) => {
 
       child.subNodes?.forEach((subNode) => {
         if (subNode.type === "VariableDeclaration") {
-          const v = createVariable(subNode);
+          const v = createVariable(subNode, false);
           variables[subNode.name] = {
             ...v,
-            isStateVariable: true,
+            isStateVariable: false,
           };
         }
 
         if (subNode.type === "StateVariableDeclaration") {
           subNode.variables?.forEach((variable) => {
-            const v = createVariable(variable);
-            variables[variable.name] = v;
+            const v = createVariable(variable, true);
+            variables[variable.name] = {
+              ...v,
+              isStateVariable: true,
+            };
           });
         }
 
@@ -301,6 +313,7 @@ export const traverseAST = (ast: IASTSourceUnit) => {
             name: "msg.sender",
             type: "address",
             parameter: false,
+            isStateVariable: false,
           };
 
           const functionName = subNode.isConstructor
@@ -349,6 +362,7 @@ export const traverseAST = (ast: IASTSourceUnit) => {
                   name: parameter?.name ?? "",
                   type: parameter?.typeName.name ?? "",
                   parameter: true,
+                  isStateVariable: false,
                 };
             });
             // Add variables for the function return parameters
@@ -358,6 +372,7 @@ export const traverseAST = (ast: IASTSourceUnit) => {
                   name: parameter?.name ?? "",
                   type: parameter?.typeName.name ?? "",
                   parameter: false,
+                  isStateVariable: false,
                 };
             });
           }
@@ -376,6 +391,7 @@ export const traverseAST = (ast: IASTSourceUnit) => {
                       name: variable.name,
                       type: variable.typeName.name,
                       parameter: false,
+                      isStateVariable: false,
                     };
                   });
                 }

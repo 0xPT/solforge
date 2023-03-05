@@ -63,6 +63,8 @@ export const getHandleColor = (type: EDataType) => {
       return HandleColors.red;
     case EDataType.NUMBER_LITERAL:
       return HandleColors.green;
+    case EDataType.STRING_LITERAL:
+      return HandleColors.pink;
     default:
       return HandleColors.white;
   }
