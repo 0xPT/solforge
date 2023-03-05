@@ -77,8 +77,9 @@ export const BottomMenu = ({
         etherscanUrl = "https://goerli.basescan.org/address/";
         break;
       case "scroll (l2)":
-        chainId = 5;
+        chainId = 534353;
         networkName = "scroll";
+        etherscanUrl = "https://blockscout.scroll.io/address/";
         break;
     }
 
