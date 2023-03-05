@@ -16,6 +16,7 @@ import scrollLogo from "@/assets/scroll.png";
 import polygonLogo from "@/assets/polygon.png";
 import ethereumLogo from "@/assets/ethereum.png";
 import Image from "next/image";
+import { useState } from "react";
 
 const optionToLogo: any = {
   "ethereum (l1)": ethereumLogo,
@@ -84,6 +85,7 @@ export const DeployModal = ({
   onClose: () => void;
   deployContract: () => Promise<void>;
 }) => {
+  const [value, setValue] = useState("");
   const options = [
     "ethereum (l1)",
     "polygon (l1)",
@@ -95,7 +97,7 @@ export const DeployModal = ({
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "framework",
     defaultValue: "",
-    onChange: console.log,
+    onChange: (newValue) => setValue(newValue),
   });
 
   const group = getRootProps();
@@ -149,7 +151,7 @@ export const DeployModal = ({
             justifyContent="flex-end"
           >
             <Button
-              onClick={() => deployContract()}
+              onClick={() => deployContract({ network: value })}
               boxShadow="rgb(0 0 0 / 10%) 0px 5px 10px"
               padding="14px 24px"
               fontWeight="500"

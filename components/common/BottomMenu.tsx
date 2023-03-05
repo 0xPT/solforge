@@ -20,11 +20,37 @@ export const BottomMenu = ({ isNavOpen }: { isNavOpen: boolean }) => {
   const [deplyOpen, setDeployOpen] = React.useState(false);
   const [srcOpen, setSrcOpen] = React.useState(false);
 
-  const deployContract = async () => {
+  const deployContract = async ({ network }) => {
+    let chainId;
+    let networkName;
+
+    switch (network) {
+      case "ethereum (l1)":
+        chainId = 5;
+        networkName = "goerli";
+        break;
+      case "polygon (l1)":
+        chainId = 80001;
+        networkName = "mumbai";
+        break;
+      case "zksync era (l2)":
+        chainId = 280;
+        networkName = "zksync";
+        break;
+      case "base (l2)":
+        chainId = 84531;
+        networkName = "base-goerli";
+        break;
+      case "scroll (l2)":
+        chainId = 5;
+        networkName = "scroll";
+        break;
+    }
+
     const response = await axios.post("/api/deploy", {
       source,
-      network: "goerli",
-      chainId: "5",
+      network: networkName,
+      chainId: chainId,
       contractName: "TestContract",
     });
 

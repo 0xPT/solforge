@@ -8,11 +8,30 @@ export default async function handler(req, res) {
   try {
     const { source, network, contractName, chainId } = req.body;
 
-    const provider = new ethers.InfuraProvider(
-      network,
-      process.env.INFURA_PROJECT_ID
-    );
-    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+    let provider = null;
+
+    if (network === "goerli") {
+      provider = new ethers.JsonRpcProvider(
+        `https://goerli.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+      );
+    } else if (network === "mumbai") {
+      provider = new ethers.JsonRpcProvider(
+        `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+      );
+    } else if (network === "zksync") {
+      provider = new ethers.JsonRpcProvider("https://rinkeby.zksync.io/");
+    } else if (network === "base-goerli") {
+      provider = new ethers.JsonRpcProvider(
+        `https://wispy-wiser-snowflake.base-goerli.discover.quiknode.pro/${process.env.QN_ID}/`
+      );
+    }
+
+    const pk =
+      network === "base-goerli"
+        ? process.env.CB_PRIVATE_KEY
+        : process.env.PRIVATE_KEY;
+
+    const wallet = new ethers.Wallet(pk, provider);
 
     const fileName = `${contractName}.sol`;
     // Compile the Solidity file using solc
