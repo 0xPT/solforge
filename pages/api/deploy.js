@@ -24,6 +24,8 @@ export default async function handler(req, res) {
       provider = new ethers.JsonRpcProvider(
         `https://wispy-wiser-snowflake.base-goerli.discover.quiknode.pro/${process.env.QN_ID}/`
       );
+    } else if (network === "scroll") {
+      provider = new ethers.JsonRpcProvider("https://alpha-rpc.scroll.io/l2");
     }
 
     const pk =
