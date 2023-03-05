@@ -71,7 +71,7 @@ export default function Home() {
 }
 
 const Main = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const reactFlowWidth = isOpen ? "calc(100vw - 300px)" : "calc(100vw - 100px)";
 
   return (
