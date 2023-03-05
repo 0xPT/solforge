@@ -1,38 +1,38 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Solforge
 
-## Getting Started
+![Logo](https://solforge.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fsolforge.20b52fcb.png&w=384&q=75)
 
-First, run the development server:
+## Vision
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+We believe that a visual scripter for Solidity enables distinguished engineers to build more complex systems on Ethereum and helps onboard less technical individuals into smart contracts, ultimately leading to more mainstream adoption of blockchain technology.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Overview
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Solforge is a visual scripter for solidity that allows both engineers and non-engineers to more easily understand smart contracts. For engineers, this tool allows you to import any smart contract and visualize the data flow in a more easy to consume, no-code format. Engineers can also use this tool to build smart contracts from scratch and easily deploy them to chains like Ethereum, zkSync, Scroll, Polygon, and Base. For non-engineers, this tool abstracts away syntax from codebases to allow people like DeFi traders and product managers to better understand how money or data is being used in a smart contract system (i.e., DeFi AMM or money market).
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Team
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Cayman Jeffers: Cayman is a full stack engineer that’s currently working in web2.
+Paul Thomas: Paul is a full stack engineer that focuses on building web3 contract bases that can attain mainstream adoption.
+Casper Yonel: Casper is an ex. wall-street banker turned software engineer and a web3 builder focused on DeFi applications.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Problems Solforge aims to solve
 
-## Learn More
+- Difficult for non-engineers to understand smart contracts
+- Difficult to understand the data flow of complex systems in Solidity
+- Can be daunting for devs to learn a new language
 
-To learn more about Next.js, take a look at the following resources:
+## The future of Solforge
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Unfortunately, we couldn't build everything we wanted to build. Some other things we would like to have added include:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Easily integrate other third-party libraries, like Chainlink Oracles or Optimism's AttestationStation
+- Quickly add upgradability and time-locks by changing settings
+- Automatically display possible security vulnerabilities and recommendations to fix them
+- Automatic gas optimization techniques
+- Deploy & manage deployed contracts in one central place
+- More robust system for nodes, including internal functions and modifiers
 
-## Deploy on Vercel
+## Bounty Information
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+We chose to give users the choice of which chain they would like to deploy on. All of the links for the deployments can be seen in the demo.

@@ -90,7 +90,7 @@ body {
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
+  color: "#fff";
   background: linear-gradient(
       to bottom,
       transparent,
