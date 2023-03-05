@@ -8,14 +8,16 @@ import {
 } from "@chakra-ui/react";
 
 export const SrcCodeModal = ({
-  source,
+  getSource,
   isOpen,
   onClose,
 }: {
-  source: string;
+  getSource: any;
   isOpen: boolean;
   onClose: () => void;
 }) => {
+  const source = getSource();
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />

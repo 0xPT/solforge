@@ -42,6 +42,7 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
+  const [stateVariables, setStateVariables] = useState([]);
   const [pos, setPos] = useState({ left: 0, top: 0 });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const flowRef = useRef<any>(null);
@@ -63,6 +64,7 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
       })
     );
     setEdges(traversedAST.edges);
+    setStateVariables(traversedAST.stateVariables);
 
     const NodeAst = convertNodesToAST(
       traversedAST.nodes as unknown as IReactFlowNode[],
@@ -273,7 +275,12 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
         handleContextMenuClose={handleContextMenuClose}
         onAddNode={onAddNode}
       />
-      <BottomMenu isNavOpen={isSideNavOpen} />
+      <BottomMenu
+        isNavOpen={isSideNavOpen}
+        nodes={nodes}
+        edges={edges}
+        stateVariables={stateVariables}
+      />
       <ReactFlow
         onInit={setFlowInstance}
         ref={flowRef}

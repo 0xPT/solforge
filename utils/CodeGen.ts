@@ -13,12 +13,12 @@ export function ast_to_source(ast) {
         if (sub_node.type === "FunctionDefinition") {
           if (sub_node.isConstructor) {
             let params = sub_node.parameters.map(
-              (p) => `${p.typeName.name} ${p.name}`
+              (p) => `${p.typeName.name} memory ${p.name}`
             );
             source += `  constructor(${params.join(", ")}) `;
           } else {
             let params = sub_node.parameters.map(
-              (p) => `${p.typeName.name} ${p.name}`
+              (p) => `${p.typeName.name} memory ${p.name}`
             );
             let returns = sub_node?.returnParameters?.map(
               (r) => `${r.typeName.name} ${r.name}`
