@@ -1,5 +1,3 @@
-# Solforge
-
 ![Logo](https://solforge.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fsolforge.20b52fcb.png&w=384&q=75)
 
 ## Vision
@@ -12,9 +10,9 @@ Solforge is a visual scripter for solidity that allows both engineers and non-en
 
 ## Team
 
-Cayman Jeffers: Cayman is a full stack engineer that’s currently working in web2.
-Paul Thomas: Paul is a full stack engineer that focuses on building web3 contract bases that can attain mainstream adoption.
-Casper Yonel: Casper is an ex. wall-street banker turned software engineer and a web3 builder focused on DeFi applications.
+Cayman Jeffers - Cayman is a founder & full-stack engineer that's currently working in Web2 and branching out into Web3.
+Paul Thomas - Paul is a founder & full-stack engineer focused on building Web3 products that can attain mainstream adoption.
+Casper Yonel - Casper is a founder & ex. Wall Street banker, and software engineer focused on building DeFi applications.
 
 ## Problems Solforge aims to solve
 

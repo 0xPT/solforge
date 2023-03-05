@@ -3,8 +3,10 @@ import { Button, Flex, IconButton, Tooltip } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import {
   AiFillCode,
-  AiOutlineCloudUpload,
+  AiOutlineCode,
   AiOutlineDeploymentUnit,
+  AiOutlineExport,
+  AiOutlineUpload,
 } from "react-icons/ai";
 import { DeployModal } from "./DeployModal";
 import axios from "axios";
@@ -108,7 +110,10 @@ export const BottomMenu = ({
 
   return (
     <Flex
-      bg="gray.900"
+      bg="#242736"
+      padding="8px 16px"
+      boxShadow="rgb(0 0 0 / 20%) 0px 0px 30px"
+      borderRadius="36px"
       justifyContent="space-around"
       zIndex={100}
       pos="absolute"
@@ -134,31 +139,37 @@ export const BottomMenu = ({
         onClose={() => setSrcOpen(false)}
         getSource={getSource}
       />
-      <Tooltip label="View source code">
+      <Tooltip label="View source code" bg="transparent" color="#fff">
         <IconButton
+          borderRadius="50%"
           onClick={() => setSrcOpen(true)}
           size="lg"
           bg="transparent"
           aria-label="View source code"
-          icon={<AiFillCode />}
+          icon={<AiOutlineCode />}
+          _hover={{ bg: "rgba(255, 255, 255, 0.1)" }}
         />
       </Tooltip>
-      <Tooltip label="Upload source code">
+      <Tooltip label="Upload source code" bg="transparent" color="#fff">
         <IconButton
+          borderRadius="50%"
           onClick={() => document.getElementById("fileInput")?.click()}
           size="lg"
           bg="transparent"
           aria-label="View source code"
-          icon={<AiOutlineCloudUpload />}
+          icon={<AiOutlineUpload />}
+          _hover={{ bg: "rgba(255, 255, 255, 0.1)" }}
         />
       </Tooltip>
-      <Tooltip label="Deploy Contract">
+      <Tooltip label="Deploy contract" bg="transparent" color="#fff">
         <IconButton
+          borderRadius="50%"
           onClick={() => setDeployOpen(true)}
           size="lg"
           bg="transparent"
           aria-label="Deploy contract"
-          icon={<AiOutlineDeploymentUnit />}
+          icon={<AiOutlineExport />}
+          _hover={{ bg: "rgba(255, 255, 255, 0.1)" }}
         />
       </Tooltip>
       <input

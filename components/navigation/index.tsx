@@ -26,10 +26,10 @@ import {
   FiPlus,
 } from "react-icons/fi";
 import { EDataType, EFunctionType, ENodeType } from "@/types";
-import { getColorOfType } from "@/utils";
+import { getColorOfType, getHandleColor } from "@/utils";
 import { useNodes } from "reactflow";
 import { traverseAST } from "@/utils/Traverse";
-import output from "../../output.json";
+import { useOutput } from "@/hooks/useOutput";
 import { VariableIcon } from "../common/VariableIcon";
 import Image from "next/image";
 import logo from "../../public/solforge.png";
@@ -86,6 +86,7 @@ const VariableTypes = [
 ];
 
 const StateVariables = () => {
+  const { output } = useOutput();
   const [isOpen, setIsOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [addedVariables, setAddedVariables] = useState<
@@ -100,8 +101,12 @@ const StateVariables = () => {
   } | null>(null);
 
   const stateVariables = useMemo(() => {
-    return [...traverseAST(output as any)?.stateVariables];
-  }, []);
+    return [...traverseAST(output as any)?.stateVariables].filter((v) => {
+      if (v.isStateVariable) {
+        return v;
+      }
+    });
+  }, [output]);
 
   const onDragStart = (event: any, nodeType: string, name: string) => {
     event.dataTransfer.setData("node-label", name);
@@ -180,32 +185,38 @@ const StateVariables = () => {
         mt={2}
         letterSpacing={0.2}
       >
-        {stateVariables.map((stateVar, index) => {
-          return (
-            <ListItem
-              _hover={{
-                cursor: "grab",
-              }}
-              _active={{
-                cursor: "grabbing",
-              }}
-              onClick={() => setSelectedVariable(stateVar)}
-              _grabbed={{ cursor: "grabbing" }}
-              draggable
-              onDragStart={(e) =>
-                onDragStart(e, ENodeType.VARIABLE_NODE, stateVar.name)
-              }
-              key={index}
-            >
-              <Flex justifyContent="space-between" width="full">
-                <Text>{stateVar.name}</Text>
-                <Text color={getColorOfType(stateVar.type)}>
-                  {stateVar.type}
-                </Text>
-              </Flex>
-            </ListItem>
-          );
-        })}
+        {stateVariables.length !== 0 ? (
+          stateVariables.map((stateVar, index) => {
+            return (
+              <ListItem
+                _hover={{
+                  cursor: "grab",
+                }}
+                _active={{
+                  cursor: "grabbing",
+                }}
+                onClick={() => setSelectedVariable(stateVar)}
+                _grabbed={{ cursor: "grabbing" }}
+                draggable
+                onDragStart={(e) =>
+                  onDragStart(e, ENodeType.VARIABLE_NODE, stateVar.name)
+                }
+                key={index}
+              >
+                <Flex justifyContent="space-between" width="full">
+                  <Text>{stateVar.name}</Text>
+                  <Text color={getHandleColor(stateVar.type)}>
+                    {stateVar.type}
+                  </Text>
+                </Flex>
+              </ListItem>
+            );
+          })
+        ) : (
+          <Text color="zinc.400" fontSize="xs" letterSpacing={0.2}>
+            {"This contract currently doesn't have any state variables."}
+          </Text>
+        )}
         {addedVariables.map((stateVar, index) => (
           <ListItem
             _hover={{
@@ -352,28 +363,34 @@ const Functions = () => {
         mt={2}
         letterSpacing={0.2}
       >
-        {functionNodes.map((functionNode, index) => {
-          return (
-            <Box key={functionNode.id}>
-              <ListItem
-                _hover={{
-                  cursor: "grab",
-                }}
-                _active={{
-                  cursor: "grabbing",
-                }}
-                _grabbed={{ cursor: "grabbing" }}
-                draggable
-                onDragStart={(e) => onDragStart(e, functionNode)}
-                key={index}
-              >
-                <Flex justifyContent="space-between" width="full">
-                  <Text>{functionNode.data.label.split(" ")[0]}</Text>
-                </Flex>
-              </ListItem>
-            </Box>
-          );
-        })}
+        {functionNodes.length !== 0 ? (
+          functionNodes.map((functionNode, index) => {
+            return (
+              <Box key={functionNode.id}>
+                <ListItem
+                  _hover={{
+                    cursor: "grab",
+                  }}
+                  _active={{
+                    cursor: "grabbing",
+                  }}
+                  _grabbed={{ cursor: "grabbing" }}
+                  draggable
+                  onDragStart={(e) => onDragStart(e, functionNode)}
+                  key={index}
+                >
+                  <Flex justifyContent="space-between" width="full">
+                    <Text>{functionNode.data.label.split(" ")[0]}</Text>
+                  </Flex>
+                </ListItem>
+              </Box>
+            );
+          })
+        ) : (
+          <Text color="zinc.400" fontSize="xs" letterSpacing={0.2}>
+            {"This contract currently doesn't have any functions."}
+          </Text>
+        )}
       </List>
     </Box>
   );

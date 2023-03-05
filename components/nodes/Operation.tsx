@@ -120,6 +120,7 @@ export const OperationNode = ({ data, selected }: IOperationNodeProps) => {
                         onInputChange(e, index, true)
                       }
                       isChecked={input.value}
+                      zIndex={999}
                     />
                   ) : (
                     <Input
@@ -141,6 +142,7 @@ export const OperationNode = ({ data, selected }: IOperationNodeProps) => {
                       paddingLeft="4px"
                       paddingRight="4px"
                       width="50px"
+                      zIndex={999}
                     />
                   )}
                 </>
