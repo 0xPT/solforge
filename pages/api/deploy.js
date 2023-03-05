@@ -34,6 +34,7 @@ export default async function handler(req, res) {
     const wallet = new ethers.Wallet(pk, provider);
 
     const fileName = `${contractName}.sol`;
+
     // Compile the Solidity file using solc
     const input = {
       language: "Solidity",

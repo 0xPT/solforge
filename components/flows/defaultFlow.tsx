@@ -1,5 +1,7 @@
+// @ts-nocheck
 import { NodeElements } from "@/constants";
 import {
+  EDataType,
   EFunctionType,
   ENodeType,
   EOperationType,
@@ -31,7 +33,7 @@ import { useOutput } from "@/hooks/useOutput";
 const connectionLineStyle = { stroke: "#fff" };
 const snapGrid: [number, number] = [20, 20];
 
-const defaultViewport = { x: 0, y: 0, zoom: 5 };
+const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
 // Set the initial node id for dragged elements.
 let id = 0;
@@ -42,6 +44,7 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
+  const [stateVariables, setStateVariables] = useState([]);
   const [pos, setPos] = useState({ left: 0, top: 0 });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const flowRef = useRef<any>(null);
@@ -65,6 +68,18 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
         })
       );
       setEdges(traversedAST.edges);
+      setStateVariables(traversedAST.stateVariables);
+
+      const NodeAst = convertNodesToAST(
+        traversedAST.nodes as unknown as IReactFlowNode[],
+        traversedAST.edges as IReactFlowEdge[],
+        traversedAST.stateVariables
+      );
+      console.log(NodeAst);
+      console.log(traversedAST.stateVariables);
+
+      const sourceCode2 = ast_to_source(NodeAst);
+      console.log(sourceCode2);
     }
   }, [output]);
 
@@ -225,6 +240,8 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
     custom: CustomEdge,
   };
 
+  console.log(nodes);
+
   const onDragOver = (event: any) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
@@ -250,8 +267,20 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
       id: getId(),
       position,
       type,
-      data: { label, type, inputs: [], outputs: [] },
+      data: {
+        label: "message",
+        type,
+        inputs: [],
+        outputs: [
+          {
+            id: "output",
+            type: EDataType.STRING,
+            label: "message",
+          },
+        ],
+      },
     };
+
     setNodes((ns) => ns.concat(newNode as any));
   };
   // console.log(nodes);
@@ -265,7 +294,12 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
         handleContextMenuClose={handleContextMenuClose}
         onAddNode={onAddNode}
       />
-      <BottomMenu isNavOpen={isSideNavOpen} />
+      <BottomMenu
+        isNavOpen={isSideNavOpen}
+        nodes={nodes}
+        edges={edges}
+        stateVariables={stateVariables}
+      />
       <ReactFlow
         onInit={setFlowInstance}
         ref={flowRef}
@@ -290,7 +324,6 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
         selectionMode={SelectionMode.Partial}
         maxZoom={30}
       >
-        <Controls />
         <Background variant={BackgroundVariant.Dots} />
       </ReactFlow>
     </Flex>

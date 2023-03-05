@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo, useState } from "react";
 import {
   Box,
@@ -30,6 +31,8 @@ import { useNodes } from "reactflow";
 import { traverseAST } from "@/utils/Traverse";
 import output from "../../output.json";
 import { VariableIcon } from "../common/VariableIcon";
+import Image from "next/image";
+import logo from "../../public/solforge.png";
 
 const VariableTypes = [
   {
@@ -145,6 +148,9 @@ const StateVariables = () => {
 
   return (
     <Box mt={4}>
+      <Flex mb={12}>
+        <Image src={logo} height={40} width="auto" />
+      </Flex>
       <Flex justifyContent="space-between" alignItems="center" width="full">
         <Text
           style={{
@@ -157,7 +163,7 @@ const StateVariables = () => {
           letterSpacing="0.1em"
           color="#fff"
         >
-          Variables
+          State Variables
         </Text>
         <IconButton
           onClick={handleAddVariable}
@@ -348,7 +354,7 @@ const Functions = () => {
       >
         {functionNodes.map((functionNode, index) => {
           return (
-            <Box>
+            <Box key={functionNode.id}>
               <ListItem
                 _hover={{
                   cursor: "grab",
@@ -382,6 +388,8 @@ export default function Sidebar({
 }) {
   const width = isOpen ? 300 : 100;
   const icon = isOpen ? <FiChevronsLeft /> : <FiChevronsRight />;
+
+  console.log(isOpen);
   return (
     <Flex
       direction="column"
@@ -409,8 +417,8 @@ export default function Sidebar({
         bg="transparent"
         maxW={10}
         ml="auto"
-        mt={isOpen ? 0 : "auto"}
         m={4}
+        mt={"auto"}
         aria-label="Toggle Sidebar"
         icon={icon}
         onClick={() => setIsOpen(!isOpen)}

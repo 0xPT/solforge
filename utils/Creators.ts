@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ENodeType, EDataType, EComparisonType, EOperationType } from "@/types";
 import { getEdgeColor } from "@/utils";
 

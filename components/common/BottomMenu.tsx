@@ -1,4 +1,5 @@
-import { Flex, IconButton, Tooltip } from "@chakra-ui/react";
+// @ts-nocheck
+import { Button, Flex, IconButton, Tooltip } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import {
   AiFillCode,
@@ -8,9 +9,21 @@ import {
 import { DeployModal } from "./DeployModal";
 import axios from "axios";
 import { SrcCodeModal } from "./SrcModal";
-import { useOutput } from "@/hooks/useOutput";
+import { convertNodesToAST } from "@/utils/FlowToAst";
 import { ast_to_source } from "@/utils/CodeGen";
-export const BottomMenu = ({ isNavOpen }: { isNavOpen: boolean }) => {
+import { useOutput } from "@/hooks/useOutput";
+
+export const BottomMenu = ({
+  isNavOpen,
+  nodes,
+  edges,
+  stateVariables,
+}: {
+  isNavOpen: boolean;
+  nodes: any;
+  edges: any;
+  stateVariables: any;
+}) => {
   const [deplyOpen, setDeployOpen] = React.useState(false);
   const [srcOpen, setSrcOpen] = React.useState(false);
   const [deployLoading, setDeployLoading] = React.useState(false);
@@ -24,7 +37,17 @@ export const BottomMenu = ({ isNavOpen }: { isNavOpen: boolean }) => {
     if (output) setSource(ast_to_source(output));
   }, [output]);
 
+  const getSource = () => {
+    const NodeAst = convertNodesToAST(nodes, edges, stateVariables);
+    const sourceCode2 = ast_to_source(NodeAst);
+
+    return sourceCode2;
+  };
+
   const deployContract = async ({ network }) => {
+    const NodeAst = convertNodesToAST(nodes, edges, stateVariables);
+    const sourceCode2 = ast_to_source(NodeAst);
+
     setDeployLoading(true);
     let chainId;
     let networkName;
@@ -58,13 +81,12 @@ export const BottomMenu = ({ isNavOpen }: { isNavOpen: boolean }) => {
     }
 
     const response = await axios.post("/api/deploy", {
-      source,
+      source: sourceCode2,
       network: networkName,
       chainId: chainId,
-      contractName: "TestContract",
+      contractName: "Contract",
     });
 
-    // console.log(response.data.address);
     setDeployHash(response.data.address);
     setDeployUrl(`${etherscanUrl}${response.data.address}`);
     setDeployLoading(false);
@@ -110,7 +132,7 @@ export const BottomMenu = ({ isNavOpen }: { isNavOpen: boolean }) => {
       <SrcCodeModal
         isOpen={srcOpen}
         onClose={() => setSrcOpen(false)}
-        source={source}
+        getSource={getSource}
       />
       <Tooltip label="View source code">
         <IconButton
