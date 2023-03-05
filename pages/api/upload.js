@@ -1,4 +1,3 @@
-import fs from "fs";
 import parser from "@solidity-parser/parser";
 
 export default function handler(req, res) {
