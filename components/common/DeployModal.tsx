@@ -80,10 +80,16 @@ export const DeployModal = ({
   isOpen,
   onClose,
   deployContract,
+  deployHash,
+  deployLoading,
+  deployUrl,
 }: {
   isOpen: boolean;
   onClose: () => void;
   deployContract: () => Promise<void>;
+  deployHash: string;
+  deployLoading: boolean;
+  deployUrl: string;
 }) => {
   const [value, setValue] = useState("");
   const options = [
@@ -135,44 +141,72 @@ export const DeployModal = ({
               >
                 Deploy contract
               </Heading>
-              {options.map((value) => {
-                const radio = getRadioProps({ value });
-                return (
-                  <RadioCard key={value} {...radio}>
-                    {value}
-                  </RadioCard>
-                );
-              })}
+              {deployHash ? (
+                <Heading
+                  fontWeight="500"
+                  fontSize="12px"
+                  letterSpacing="0.1em"
+                  color="#fff"
+                  mt="1.5px"
+                  ml="0.75px"
+                  mb="24px"
+                >
+                  Contract deployed to{" "}
+                  <a
+                    href={deployUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ textDecoration: "underline" }}
+                  >
+                    {deployHash}
+                  </a>
+                  !
+                </Heading>
+              ) : (
+                <>
+                  {options.map((value) => {
+                    const radio = getRadioProps({ value });
+                    return (
+                      <RadioCard key={value} {...radio}>
+                        {value}
+                      </RadioCard>
+                    );
+                  })}
+                </>
+              )}
             </VStack>
           </Flex>
-          <Flex
-            padding="32px"
-            borderTop="1px solid #34384e"
-            justifyContent="flex-end"
-          >
-            <Button
-              onClick={() => deployContract({ network: value })}
-              boxShadow="rgb(0 0 0 / 10%) 0px 5px 10px"
-              padding="14px 24px"
-              fontWeight="500"
-              fontSize="10px"
-              textTransform="uppercase"
-              letterSpacing="0.1em"
-              color="#fff"
-              mt="1.5px"
-              ml="0.75px"
-              style={{
-                fontFeatureSettings: "'ss02' on",
-              }}
-              borderRadius="8px"
-              background={"#1e62ff"}
-              _hover={{
-                background: "rgba(30, 98, 255, 0.7)",
-              }}
+          {!deployHash && (
+            <Flex
+              padding="32px"
+              borderTop="1px solid #34384e"
+              justifyContent="flex-end"
             >
-              Deploy
-            </Button>
-          </Flex>
+              <Button
+                isLoading={deployLoading}
+                onClick={() => deployContract({ network: value })}
+                boxShadow="rgb(0 0 0 / 10%) 0px 5px 10px"
+                padding="14px 24px"
+                fontWeight="500"
+                fontSize="10px"
+                textTransform="uppercase"
+                letterSpacing="0.1em"
+                color="#fff"
+                mt="1.5px"
+                ml="0.75px"
+                style={{
+                  fontFeatureSettings: "'ss02' on",
+                }}
+                borderRadius="8px"
+                background={"#1e62ff"}
+                _hover={{
+                  background: "rgba(30, 98, 255, 0.7)",
+                }}
+              >
+                Deploy
+              </Button>
+            </Flex>
+          )}
         </ModalContent>
       </Modal>
     </>

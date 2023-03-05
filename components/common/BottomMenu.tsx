@@ -19,27 +19,36 @@ contract TestContract {
 export const BottomMenu = ({ isNavOpen }: { isNavOpen: boolean }) => {
   const [deplyOpen, setDeployOpen] = React.useState(false);
   const [srcOpen, setSrcOpen] = React.useState(false);
+  const [deployLoading, setDeployLoading] = React.useState(false);
+  const [deployHash, setDeployHash] = React.useState("");
+  const [deployUrl, setDeployUrl] = React.useState("");
 
   const deployContract = async ({ network }) => {
+    setDeployLoading(true);
     let chainId;
     let networkName;
+    let etherscanUrl;
 
     switch (network) {
       case "ethereum (l1)":
         chainId = 5;
         networkName = "goerli";
+        etherscanUrl = "https://goerli.etherscan.io/address/";
         break;
       case "polygon (l1)":
         chainId = 80001;
         networkName = "mumbai";
+        etherscanUrl = "https://mumbai.polygonscan.com/address/";
         break;
       case "zksync era (l2)":
         chainId = 280;
         networkName = "zksync";
+        etherscanUrl = "https://rinkeby-explorer.zksync.io/address/";
         break;
       case "base (l2)":
         chainId = 84531;
         networkName = "base-goerli";
+        etherscanUrl = "https://goerli.basescan.org/address/";
         break;
       case "scroll (l2)":
         chainId = 5;
@@ -55,6 +64,9 @@ export const BottomMenu = ({ isNavOpen }: { isNavOpen: boolean }) => {
     });
 
     // console.log(response.data.address);
+    setDeployHash(response.data.address);
+    setDeployUrl(`${etherscanUrl}${response.data.address}`);
+    setDeployLoading(false);
   };
 
   const left = isNavOpen ? "calc(50% - 50px + 100px)" : "calc(50% - 50px)";
@@ -72,8 +84,15 @@ export const BottomMenu = ({ isNavOpen }: { isNavOpen: boolean }) => {
     >
       <DeployModal
         isOpen={deplyOpen}
-        onClose={() => setDeployOpen(false)}
+        onClose={() => {
+          setDeployOpen(false);
+          setDeployHash("");
+          setDeployUrl("");
+        }}
         deployContract={deployContract}
+        deployHash={deployHash}
+        deployUrl={deployUrl}
+        deployLoading={deployLoading}
       />
       <SrcCodeModal
         isOpen={srcOpen}
