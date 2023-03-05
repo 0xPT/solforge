@@ -39,3 +39,18 @@ We were inspired by Blueprints in Unreal Engine, and thought that it would be us
 ## Bounty Information
 
 We chose to give users the choice of which chain they would like to deploy on. All of the links for the deployments can be seen in the demo.
+
+Polygon (Mumbai) Deployment - https://mumbai.polygonscan.com/address/0xa4489a202911557e54E987dBaDAE8115cDA15913
+Base (Testnet) Deployment - https://goerli.basescan.org/address/0x71bC6dE53CFFDdb49693442B3cBa1645993C7e0A
+Scroll (Testnet) Deployment - https://blockscout.scroll.io/address/0x77552BACCbA6E8De17885484351Ce3D31b4D1E92
+zkSync (Testnet) Deployment - Couldn't get deployment working :(
+
+We recommend Polygon, Base, Scroll, and zkSync because:
+
+1. They are all compatible with the Ethereum Virtual Machine, allowing developers to use existing Ethereum tools and infrastructure to build on them.
+
+2. They all offer high throughput and faster transaction times than Ethereum, making them more scalable and better suited to handle high volumes of transactions.
+
+3. They all offer significantly lower transaction fees than Ethereum, making them more cost-effective to build and deploy applications on the platform.
+
+4. They are interoperable with other blockchains, making it easy to integrate with other networks and build more complex and innovative applications.
