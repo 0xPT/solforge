@@ -7,23 +7,13 @@ import {
   IReactFlowNode,
 } from "@/types";
 import { traverseAST } from "@/utils/Traverse";
-import {
-  Box,
-  Button,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Flex, useDisclosure } from "@chakra-ui/react";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
   addEdge,
   Controls,
-  Position,
   Background,
   BackgroundVariant,
   Connection,
@@ -33,36 +23,21 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import { ContextMenu } from "../common/ContextMenu";
 import CustomEdge from "./CustomEdge";
-import { exampleNodes, exampleEdges } from "./examples/AddToAmountAdded";
 import output from "@/output.json";
-import { DeployModal } from "../DeployModal";
-import axios from "axios";
 import { convertNodesToAST } from "@/utils/FlowToAst";
 import { ast_to_source } from "@/utils/CodeGen";
-
-const initBgColor = "#000";
+import { BottomMenu } from "../common/BottomMenu";
 
 const connectionLineStyle = { stroke: "#fff" };
 const snapGrid: [number, number] = [20, 20];
 
 const defaultViewport = { x: 0, y: 0, zoom: 5 };
 
-const source = `pragma solidity 0.8.8;
-contract TestContract {
-	function testAddress() public returns (address) {
-      address anAddress;
-
-      anAddress = 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2;
-
-      return anAddress;
-    }
-}`;
-
 // Set the initial node id for dragged elements.
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
-export const DefaultFlow = () => {
+export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
   // @ts-ignore
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -288,47 +263,15 @@ export const DefaultFlow = () => {
   // console.log(nodes);
   // console.log(edges);
 
-  const deployContract = async () => {
-    const response = await axios.post("/api/deploy", {
-      source,
-      network: "goerli",
-      chainId: "5",
-      contractName: "TestContract",
-    });
-
-    // console.log(response.data.address);
-  };
-
   return (
-    <Flex
-      onContextMenu={handleContextMenu}
-      w="full"
-      h={{
-        base: "full",
-        md: "calc(100vh - 40px)",
-      }}
-    >
+    <Flex onContextMenu={handleContextMenu} w="full" h="100vh">
       <ContextMenu
         isOpen={contextMenuOpen}
         pos={pos}
         handleContextMenuClose={handleContextMenuClose}
         onAddNode={onAddNode}
       />
-      <DeployModal
-        isOpen={isOpen}
-        onClose={onClose}
-        deployContract={deployContract}
-      />
-      <Button
-        onClick={onOpen}
-        position="absolute"
-        bottom="0"
-        right="0"
-        zIndex={99999}
-      >
-        Open Modal
-      </Button>
-
+      <BottomMenu isNavOpen={isSideNavOpen} />
       <ReactFlow
         onInit={setFlowInstance}
         ref={flowRef}

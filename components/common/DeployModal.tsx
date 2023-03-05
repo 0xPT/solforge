@@ -17,7 +17,7 @@ import polygonLogo from "@/assets/polygon.png";
 import ethereumLogo from "@/assets/ethereum.png";
 import Image from "next/image";
 
-const optionToLogo = {
+const optionToLogo: any = {
   "ethereum (l1)": ethereumLogo,
   "polygon (l1)": polygonLogo,
   "zksync era (l2)": zkSyncLogo,
@@ -25,7 +25,7 @@ const optionToLogo = {
   "scroll (l2)": scrollLogo,
 };
 
-function RadioCard(props) {
+function RadioCard(props: any) {
   const { getInputProps, getCheckboxProps } = useRadio(props);
 
   const input = getInputProps();
@@ -63,6 +63,7 @@ function RadioCard(props) {
         border="1px solid #34384e"
       >
         <Image
+          alt="deploy"
           src={optionToLogo[props.value]}
           width={32}
           height={32}

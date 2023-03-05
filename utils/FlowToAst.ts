@@ -223,9 +223,11 @@ export const convertNodesToAST = (
 
   traversableNodes.forEach((traversableNode) => {
     let dataSource;
-    if ((traversableNode.data.operation = EFunctionType.START))
+    if ((traversableNode.data.operation = EFunctionType.START)) {
       dataSource = ContractDefinition.subNodes;
-    else dataSource = (ContractDefinition.subNodes[0] as any).body.statements;
+    } else {
+      dataSource = (ContractDefinition.subNodes[0] as any).body.statements;
+    }
     traverse(traversableNode as any, dataSource);
   });
   return ast;
