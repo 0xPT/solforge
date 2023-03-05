@@ -6,6 +6,9 @@ import { ReactFlowProvider } from "reactflow";
 import { OutputProvider } from "../hooks/useOutput";
 
 export const Theme = extendTheme({
+  initialColorMode: "light",
+  //  If true, your app will change color mode based on the user's system preferences.
+  useSystemColorMode: false,
   fonts: {
     heading: "Inter",
     body: "Inter",
