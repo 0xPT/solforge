@@ -30,6 +30,8 @@ import { useNodes } from "reactflow";
 import { traverseAST } from "@/utils/Traverse";
 import output from "../../output.json";
 import { VariableIcon } from "../common/VariableIcon";
+import Image from "next/image";
+import logo from "../../public/solforge.png";
 
 const VariableTypes = [
   {
@@ -145,6 +147,9 @@ const StateVariables = () => {
 
   return (
     <Box mt={4}>
+      <Flex mb={12}>
+        <Image src={logo} height={40} width="auto" />
+      </Flex>
       <Flex justifyContent="space-between" alignItems="center" width="full">
         <Text
           style={{
@@ -157,7 +162,7 @@ const StateVariables = () => {
           letterSpacing="0.1em"
           color="#fff"
         >
-          Variables
+          State Variables
         </Text>
         <IconButton
           onClick={handleAddVariable}

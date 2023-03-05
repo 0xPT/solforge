@@ -1,5 +1,6 @@
 import { NodeElements } from "@/constants";
 import {
+  EDataType,
   EFunctionType,
   ENodeType,
   EOperationType,
@@ -235,6 +236,8 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
     custom: CustomEdge,
   };
 
+  console.log(nodes);
+
   const onDragOver = (event: any) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
@@ -260,8 +263,20 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
       id: getId(),
       position,
       type,
-      data: { label, type, inputs: [], outputs: [] },
+      data: {
+        label: "message",
+        type,
+        inputs: [],
+        outputs: [
+          {
+            id: "output",
+            type: EDataType.STRING,
+            label: "message",
+          },
+        ],
+      },
     };
+
     setNodes((ns) => ns.concat(newNode as any));
   };
   // console.log(nodes);
@@ -305,7 +320,6 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
         selectionMode={SelectionMode.Partial}
         maxZoom={30}
       >
-        <Controls />
         <Background variant={BackgroundVariant.Dots} />
       </ReactFlow>
     </Flex>
