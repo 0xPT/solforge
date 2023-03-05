@@ -380,7 +380,7 @@ export const convertNodesToAST = (
     const hasExecuteOutput = nd.data.outputs.find((out) => {
       return out.id === "execute";
     });
-    const hasInuptExecute = nd.data.inputs.find((inp) => {
+    const hasInuptExecute = nd.data.inputs?.find((inp) => {
       return inp.id === "execute";
     });
     return hasExecuteOutput || hasInuptExecute;

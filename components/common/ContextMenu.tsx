@@ -58,7 +58,7 @@ interface IOption {
 
 const Options: IOption[] = [
   {
-    label: "Add a Variable",
+    label: "Reference a Variable",
     icon: <HiVariable />,
     suboptions: [
       {
@@ -275,13 +275,7 @@ export const ContextMenu = ({
                   className="ignore-click-outside"
                   onClick={(e) => handleParentMenuClick(e, option)}
                   leftIcon={option.icon}
-                  rightIcon={
-                    option.actionType === "addNode" ? (
-                      <FiPlus />
-                    ) : (
-                      <FiChevronRight />
-                    )
-                  }
+                  rightIcon={<FiChevronRight />}
                 >
                   <Text
                     className="ignore-click-outside"

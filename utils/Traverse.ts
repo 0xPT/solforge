@@ -478,5 +478,7 @@ export const traverseAST = (ast: IASTSourceUnit) => {
     }
   });
 
+  console.log(nodes);
+
   return { nodes, edges, stateVariables: Object.values(variables) };
 };

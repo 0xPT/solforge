@@ -115,41 +115,17 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
           id: `node-${nodes.length + 1}`,
           type,
           data: {
-            label: additional === EFunctionType.START ? "Start" : "End",
+            label:
+              additional === EFunctionType.START
+                ? "Function - Start"
+                : "Function - End",
             type,
             operation: additional,
+            inputs: [{}],
+            outputs: [{}],
           },
-          position: { x: 0, y: 0 },
+          position: pos,
         };
-        // case ENodeType.FUNCTION_NODE: {
-        //   const newNode = {
-        //     id: `node-${nodes.length + 1}`,
-        //     type,
-        //     data: {
-        //       label: `Node ${nodes.length + 1}`,
-        //       type,
-        //       inputs: [
-        //         {
-        //           name: "bussin bussin",
-        //           type: "uint256",
-        //         },
-        //         {
-        //           name: "bussin bussin",
-        //           type: "address",
-        //         },
-        //         {
-        //           name: "bussin bussin",
-        //           type: "struct",
-        //         },
-        //       ],
-        //       outputs: [],
-        //     },
-        //     position: { x: 0, y: 0 },
-        //   };
-        //   setNodes((ns) => ns.concat(newNode));
-        //   return;
-        // }
-        // @ts-ignore
         setNodes((ns) => ns.concat(newNode));
         break;
       }
@@ -160,9 +136,9 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
           data: {
             label: "Set",
             type,
-            value: additional.value,
+            value: additional?.value,
           },
-          position: { x: 0, y: 0 },
+          position: pos,
         };
         // @ts-ignore
         setNodes((ns) => ns.concat(newNode));
@@ -175,8 +151,15 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
           data: {
             label: `Node ${nodes.length + 1}`,
             type,
+            outputs: [
+              {
+                id: "output",
+                label: "new Var",
+                type,
+              },
+            ],
           },
-          position: { x: 0, y: 0 },
+          position: pos,
         };
         // @ts-ignore
         setNodes((ns) => ns.concat(newNode));
@@ -190,6 +173,20 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
             label: `Node ${nodes.length + 1}`,
             type,
             operation: additional,
+            outputs: [{}],
+            inputs: [
+              {
+                id: "left",
+                label: "",
+                type: "uint256",
+              },
+              {
+                id: "right",
+                label: "",
+                type: "NumberLiteral",
+                value: 1,
+              },
+            ],
           },
           position: { x: 0, y: 0 },
         };
