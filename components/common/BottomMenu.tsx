@@ -113,14 +113,13 @@ export const BottomMenu = ({
       bg="#242736"
       padding="8px 16px"
       boxShadow="rgb(0 0 0 / 20%) 0px 0px 30px"
-      borderRadius="36px"
+      borderRadius="48px"
       justifyContent="space-around"
       zIndex={100}
       pos="absolute"
       bottom="24px"
       left={left}
       w="200px"
-      borderRadius={24}
     >
       <DeployModal
         isOpen={deplyOpen}
