@@ -23,10 +23,10 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import { ContextMenu } from "../common/ContextMenu";
 import CustomEdge from "./CustomEdge";
-import output from "@/output.json";
 import { convertNodesToAST } from "@/utils/FlowToAst";
 import { ast_to_source } from "@/utils/CodeGen";
 import { BottomMenu } from "../common/BottomMenu";
+import { useOutput } from "@/hooks/useOutput";
 
 const connectionLineStyle = { stroke: "#fff" };
 const snapGrid: [number, number] = [20, 20];
@@ -46,35 +46,27 @@ export const DefaultFlow = ({ isSideNavOpen }: { isSideNavOpen: boolean }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const flowRef = useRef<any>(null);
   const [flowInstance, setFlowInstance] = useState<any>(null);
+  const { output } = useOutput();
+  console.log(output);
 
   useEffect(() => {
-    const traversedAST = traverseAST(output as any);
-    const sourceCode = ast_to_source(output);
+    if (output) {
+      const traversedAST = traverseAST(output as any);
 
-    setNodes(
-      traversedAST.nodes.map((node) => {
-        return {
-          ...node,
-          data: {
-            ...node.data,
-            updateNode: (data: any) => getUpdateNodeFunction(node, data),
-          },
-        };
-      })
-    );
-    setEdges(traversedAST.edges);
-
-    const NodeAst = convertNodesToAST(
-      traversedAST.nodes as unknown as IReactFlowNode[],
-      traversedAST.edges as IReactFlowEdge[],
-      traversedAST.stateVariables
-    );
-    console.log(NodeAst);
-    console.log(traversedAST.stateVariables);
-
-    const sourceCode2 = ast_to_source(NodeAst);
-    console.log(sourceCode2);
-  }, []);
+      setNodes(
+        traversedAST.nodes.map((node) => {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              updateNode: (data: any) => getUpdateNodeFunction(node, data),
+            },
+          };
+        })
+      );
+      setEdges(traversedAST.edges);
+    }
+  }, [output]);
 
   const getUpdateNodeFunction = (node: any, data: any) => {
     setNodes((nodes) => {

@@ -3,6 +3,7 @@ import Sidebar from "@/components/navigation";
 import { DefaultFlow } from "@/components/flows/defaultFlow";
 import { useState } from "react";
 import { ReactFlowProvider } from "reactflow";
+import { OutputProvider } from "../hooks/useOutput";
 
 export const Theme = extendTheme({
   fonts: {
@@ -75,19 +76,21 @@ const Main = () => {
   const reactFlowWidth = isOpen ? "calc(100vw - 300px)" : "calc(100vw - 100px)";
 
   return (
-    <ReactFlowProvider>
-      <Box h="100vh" w="100vw">
-        <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
-        <Box h="100vh">
-          <Flex
-            w={{ base: "full", md: reactFlowWidth }}
-            ml={isOpen ? "300px" : "100px"}
-            bg="#1c1e2a"
-          >
-            <DefaultFlow isSideNavOpen={isOpen} />
-          </Flex>
+    <OutputProvider>
+      <ReactFlowProvider>
+        <Box h="100vh" w="100vw">
+          <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+          <Box h="100vh">
+            <Flex
+              w={{ base: "full", md: reactFlowWidth }}
+              ml={isOpen ? "300px" : "100px"}
+              bg="#1c1e2a"
+            >
+              <DefaultFlow isSideNavOpen={isOpen} />
+            </Flex>
+          </Box>
         </Box>
-      </Box>
-    </ReactFlowProvider>
+      </ReactFlowProvider>
+    </OutputProvider>
   );
 };

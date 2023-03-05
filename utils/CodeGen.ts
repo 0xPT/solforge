@@ -1,6 +1,5 @@
 // @ts-nocheck
 export function ast_to_source(ast) {
-  console.log(ast);
   let source = "";
 
   // Recursively traverse the AST nodes

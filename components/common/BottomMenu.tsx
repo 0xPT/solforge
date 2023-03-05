@@ -1,27 +1,28 @@
-import { Button, Flex, IconButton, Tooltip } from "@chakra-ui/react";
-import React from "react";
-import { AiFillCode, AiOutlineDeploymentUnit } from "react-icons/ai";
+import { Flex, IconButton, Tooltip } from "@chakra-ui/react";
+import React, { useEffect } from "react";
+import {
+  AiFillCode,
+  AiOutlineCloudUpload,
+  AiOutlineDeploymentUnit,
+} from "react-icons/ai";
 import { DeployModal } from "./DeployModal";
 import axios from "axios";
 import { SrcCodeModal } from "./SrcModal";
-
-const source = `pragma solidity 0.8.8;
-contract TestContract {
-	function testAddress() public returns (address) {
-      address anAddress;
-
-      anAddress = 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2;
-
-      return anAddress;
-    }
-}`;
-
+import { useOutput } from "@/hooks/useOutput";
+import { ast_to_source } from "@/utils/CodeGen";
 export const BottomMenu = ({ isNavOpen }: { isNavOpen: boolean }) => {
   const [deplyOpen, setDeployOpen] = React.useState(false);
   const [srcOpen, setSrcOpen] = React.useState(false);
   const [deployLoading, setDeployLoading] = React.useState(false);
   const [deployHash, setDeployHash] = React.useState("");
   const [deployUrl, setDeployUrl] = React.useState("");
+  const [source, setSource] = React.useState("");
+
+  const { output, setOutput } = useOutput();
+
+  useEffect(() => {
+    if (output) setSource(ast_to_source(output));
+  }, [output]);
 
   const deployContract = async ({ network }) => {
     setDeployLoading(true);
@@ -69,6 +70,18 @@ export const BottomMenu = ({ isNavOpen }: { isNavOpen: boolean }) => {
     setDeployLoading(false);
   };
 
+  const handleFileChange = async (e: any) => {
+    let text;
+    const file = e?.target?.files[0];
+    const reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = async (e) => {
+      text = e?.target?.result;
+      const res = await axios.post("/api/upload", { text });
+      setOutput(res.data);
+    };
+  };
+
   const left = isNavOpen ? "calc(50% - 50px + 100px)" : "calc(50% - 50px)";
 
   return (
@@ -108,6 +121,15 @@ export const BottomMenu = ({ isNavOpen }: { isNavOpen: boolean }) => {
           icon={<AiFillCode />}
         />
       </Tooltip>
+      <Tooltip label="Upload source code">
+        <IconButton
+          onClick={() => document.getElementById("fileInput")?.click()}
+          size="lg"
+          bg="transparent"
+          aria-label="View source code"
+          icon={<AiOutlineCloudUpload />}
+        />
+      </Tooltip>
       <Tooltip label="Deploy Contract">
         <IconButton
           onClick={() => setDeployOpen(true)}
@@ -117,6 +139,12 @@ export const BottomMenu = ({ isNavOpen }: { isNavOpen: boolean }) => {
           icon={<AiOutlineDeploymentUnit />}
         />
       </Tooltip>
+      <input
+        id="fileInput"
+        type="file"
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
     </Flex>
   );
 };
