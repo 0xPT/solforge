@@ -30,6 +30,11 @@ Unfortunately, we couldn't build everything we wanted to build. Some other thing
 - Automatic gas optimization techniques
 - Deploy & manage deployed contracts in one central place
 - More robust system for nodes, including internal functions and modifiers
+- Other languages
+
+## How we built it
+
+We were inspired by Blueprints in Unreal Engine, and thought that it would be useful to have a similar tool for Solidity. The main flow of the project was this: Solidity -> AST -> React Flow -> AST -> Solidity. We spent a good amount of time just parsing and converting code into different formats.
 
 ## Bounty Information
 
