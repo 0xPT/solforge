@@ -90,7 +90,7 @@ body {
 }
 
 body {
-  color: "#fff";
+  color: "#fff !important";
   background: linear-gradient(
       to bottom,
       transparent,
