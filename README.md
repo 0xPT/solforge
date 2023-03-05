@@ -36,6 +36,13 @@ Unfortunately, we couldn't build everything we wanted to build. Some other thing
 
 We were inspired by Blueprints in Unreal Engine, and thought that it would be useful to have a similar tool for Solidity. The main flow of the project was this: Solidity -> AST -> React Flow -> AST -> Solidity. We spent a good amount of time just parsing and converting code into different formats.
 
+# Challenges we faced
+
+- Converting a visual graph back into an AST, and then into source code is a very complex task that presented some challenges
+- Converting an AST into a visual graph was also slightly challenging
+- Deploying on base was somewhat difficult without Hardhat
+- Deploying on zksync without a Hardhat library blocked us from deploying on zkSync
+
 ## Bounty Information
 
 We chose to give users the choice of which chain they would like to deploy on. All of the links for the deployments can be seen in the demo.
