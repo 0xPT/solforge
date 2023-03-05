@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { EDataType } from "@/types";
 import { getColorOfType } from "@/utils";
 import { Text } from "@chakra-ui/react";

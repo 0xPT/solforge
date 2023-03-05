@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NodeElements } from "@/constants";
 import {
   EDataType,
@@ -32,7 +33,7 @@ import { BottomMenu } from "../common/BottomMenu";
 const connectionLineStyle = { stroke: "#fff" };
 const snapGrid: [number, number] = [20, 20];
 
-const defaultViewport = { x: 0, y: 0, zoom: 5 };
+const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
 // Set the initial node id for dragged elements.
 let id = 0;

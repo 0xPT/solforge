@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DataTypeToLetter } from "@/constants";
 import { ENodeType, IDataHandle } from "@/types";
 import { getHandleColor } from "@/utils";

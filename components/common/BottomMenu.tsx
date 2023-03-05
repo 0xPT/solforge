@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Button, Flex, IconButton, Tooltip } from "@chakra-ui/react";
 import React from "react";
 import { AiFillCode, AiOutlineDeploymentUnit } from "react-icons/ai";

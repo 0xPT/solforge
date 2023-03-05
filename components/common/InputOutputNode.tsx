@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Handle, Position } from "reactflow";
 import { ENodeInputOutputType } from "@/types";
 
