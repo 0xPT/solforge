@@ -84,7 +84,7 @@ const Main = () => {
             ml={isOpen ? "300px" : "100px"}
             bg="#1c1e2a"
           >
-            <DefaultFlow />
+            <DefaultFlow isSideNavOpen={isOpen} />
           </Flex>
         </Box>
       </Box>
